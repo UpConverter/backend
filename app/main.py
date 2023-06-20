@@ -1,21 +1,31 @@
 from fastapi import FastAPI
-from typing import List
-from models import *
 
+from . import models, schemas
+from .database import SessionLocal, engine
+
+
+schemas.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-@app.get("/ports", response_model=List[Port])
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.get("/ports", response_model=list[models.Port])
 def get_ports():
     ports = [
-        Port(id=1, value='COM1'),
-        Port(id=2, value='COM2'),
-        Port(id=3, value='COM3'),
-        Port(id=4, value='COM4')
+        models.Port(id=1, value='COM1'),
+        models.Port(id=2, value='COM2'),
+        models.Port(id=3, value='COM3'),
+        models.Port(id=4, value='COM4')
     ]
     return ports
-
-# Определите аналогичные пути для остальных методов
 
 
 if __name__ == "__main__":
