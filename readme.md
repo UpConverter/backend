@@ -1,4 +1,5 @@
 # Backend часть для Up Converter
+# [Frontend репозиторий](https://github.com/TimofeyTst/up_converter_frontend) 
 ## Настройка под Linux Ubuntu
 ### При необходимости создайте виртуальное окружение в Python
 > Можно пропустить этот шаг
