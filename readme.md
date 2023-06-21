@@ -12,6 +12,11 @@
 ```
     pip install -r reqs.txt
 ```
+### Заполняем базу данных по умолчанию
+``` 
+    python -m app.data.initial_data 
+```
+> Чтобы добавить тестовые данные ``` python -m app.data.test_data ```
 ### Запускаем сервер
 ```
     uvicorn app.main:app --reload
