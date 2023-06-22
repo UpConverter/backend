@@ -25,7 +25,8 @@ class DeviceTypeCreate(DeviceTypeBase):
 
 
 class DeviceType(DeviceTypeBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class DeviceModelBase(BaseModel):
@@ -38,7 +39,8 @@ class DeviceModelCreate(DeviceModelBase):
 
 
 class DeviceModel(DeviceModelBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class DeviceStateBase(BaseModel):
@@ -51,7 +53,8 @@ class DeviceStateCreate(DeviceStateBase):
 
 
 class DeviceState(DeviceStateBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class DeviceAdditionalStateBase(BaseModel):
@@ -64,7 +67,8 @@ class DeviceAdditionalStateCreate(DeviceAdditionalStateBase):
 
 
 class DeviceAdditionalState(DeviceAdditionalStateBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class ChannelBase(BaseModel):
