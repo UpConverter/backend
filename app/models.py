@@ -1,23 +1,9 @@
 from pydantic import BaseModel
 
-# class ItemBase(BaseModel):
-#     title: str
-#     description: str | None = None
-
-# class ItemCreate(ItemBase):
-#     pass
-
-# class Item(ItemBase):
-#     id: int
-#     owner_id: int
-
-#     class Config:
-#         orm_mode = True
-
 
 class PortBase(BaseModel):
     id: int
-    value: str
+    name: str
 
 
 class PortCreate(PortBase):
@@ -25,7 +11,8 @@ class PortCreate(PortBase):
 
 
 class Port(PortBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class DeviceTypeBase(BaseModel):
