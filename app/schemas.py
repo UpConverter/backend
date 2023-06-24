@@ -64,7 +64,7 @@ class Device(Base):
     additional_state_id = Column(
         Integer, ForeignKey("device_additional_state.id"))
 
-    type = relationship("DeviceType", backref="devices")
+    type_ = relationship("DeviceType", backref="devices")
     model = relationship("DeviceModel", backref="devices")
     state = relationship("DeviceState", backref="devices")
     additional_state = relationship("DeviceAdditionalState", backref="devices")

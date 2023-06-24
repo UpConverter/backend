@@ -28,3 +28,17 @@ def read_device_states(db: Session, skip: int = 0, limit: int = 100):
 
 def read_device_additional_states(db: Session, skip: int = 0, limit: int = 100):
     return db.query(schemas.DeviceAdditionalState).offset(skip).limit(limit).all()
+
+
+def read_devices_by_type(db: Session, type_name: str):
+    devices_by_type = db.query(schemas.DeviceType).filter(
+        schemas.DeviceType.name == type_name).first().devices
+    return devices_by_type
+
+
+def read_devices_by_types(db: Session, type_names: list[str], skip: int = 0, limit: int = 100):
+    devices_by_types = db.query(schemas.Device).join(schemas.DeviceType).filter(
+        schemas.DeviceType.name.in_(type_names)
+    ).offset(skip).limit(limit).all()
+
+    return devices_by_types

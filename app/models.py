@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class PortBase(BaseModel):
@@ -101,9 +102,9 @@ class DeviceBase(BaseModel):
     id: int
     serial_number: int
     type_id: int
-    model_id: int
-    state_id: int
-    additional_state_id: int
+    model_id: Optional[int]
+    state_id: Optional[int]
+    additional_state_id: Optional[int]
 
 
 class DeviceCreate(DeviceBase):
@@ -111,7 +112,8 @@ class DeviceCreate(DeviceBase):
 
 
 class Device(DeviceBase):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class ConnectionBase(BaseModel):
