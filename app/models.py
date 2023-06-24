@@ -144,4 +144,6 @@ class ConfigurationCreate(ConfigurationBase):
 
 
 class Configuration(ConfigurationBase):
-    pass
+    class Config:
+        orm_mode = True
+

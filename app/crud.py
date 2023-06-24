@@ -42,3 +42,6 @@ def read_devices_by_types(db: Session, type_names: list[str], skip: int = 0, lim
     ).offset(skip).limit(limit).all()
 
     return devices_by_types
+
+def read_configurations(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(schemas.Configuration).offset(skip).limit(limit).all()
