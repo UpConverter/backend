@@ -32,11 +32,11 @@ data = {
          "model_id": 1, "state_id": 0, "additional_state_id": 0},
     ],
     "Configuration": [
-        {"name": "Конфигурация 1", "speed_id": 0, "port_id": 0},
-        {"name": "Конфигурация 2", "speed_id": 1, "port_id": 1},
-        {"name": "Конфигурация 3", "speed_id": 1, "port_id": 1},
-        {"name": "Конфигурация 4", "speed_id": 1, "port_id": 2},
-        {"name": "Конфигурация 5", "speed_id": 1, "port_id": 3},
+        {"name": "Конфигурация 1"},
+        {"name": "Конфигурация 2"},
+        {"name": "Конфигурация 3"},
+        {"name": "Конфигурация 4"},
+        {"name": "Конфигурация 5"},
     ],
     "Connection": [
         {"configuration_id": 0, "device_id": 2, "connected_to_device_id": 1,

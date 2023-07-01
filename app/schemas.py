@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -92,9 +92,19 @@ class Configuration(Base):
     __tablename__ = "configuration"
 
     id = Column(Integer, primary_key=True, index=True)
-    speed_id = Column(Integer, ForeignKey("speed.id"))
-    port_id = Column(Integer, ForeignKey("port.id"))
     name = Column(String)
 
-    speed = relationship("Speed", backref="configurations")
-    port = relationship("Port", backref="configurations")
+
+class Attempt(Base):
+    __tablename__ = "attempt"
+
+    id = Column(Integer, primary_key=True, index=True)
+    configuration_id = Column(Integer, ForeignKey("configuration.id"))
+    speed_id = Column(Integer, ForeignKey("speed.id"))
+    port_id = Column(Integer, ForeignKey("port.id"))
+    success = Column(Boolean)
+    timestamp = Column(DateTime)
+
+    configuration = relationship("Configuration", backref="attempts")
+    speed = relationship("Speed", backref="attempts")
+    port = relationship("Port", backref="attempts")

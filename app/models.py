@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
 
 
@@ -134,8 +135,6 @@ class Connection(ConnectionBase):
 
 class ConfigurationBase(BaseModel):
     id: int
-    speed_id: int
-    port_id: int
     name: str
 
 
@@ -147,3 +146,20 @@ class Configuration(ConfigurationBase):
     class Config:
         orm_mode = True
 
+
+class AttemptBase(BaseModel):
+    id: int
+    configuration_id: int
+    speed_id: int
+    port_id: int
+    success: bool
+    timestamp: datetime
+
+
+class AttemptCreate(ConfigurationBase):
+    pass
+
+
+class Attempt(ConfigurationBase):
+    class Config:
+        orm_mode = True
