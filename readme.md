@@ -10,7 +10,7 @@
 ### Устанавливаем зависимости
 > Внутри виртуального окружения или без него
 ```
-    pip install -r reqs.txt
+    pip install -r requirements/base.txt
 ```
 ### Заполняем базу данных по умолчанию
 ``` 
@@ -28,3 +28,6 @@
 http://127.0.0.1:8000/
 > Для просмотра документации допишите в конце адреса путь docs:
 > http://127.0.0.1:8000/docs
+
+### Доп информация
+Структура проекта взята [отсюда](https://github.com/zhanymkanov/fastapi-best-practices#1-project-structure-consistent--predictable)
