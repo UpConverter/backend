@@ -15,14 +15,17 @@ async def read_device_models(skip: int = 0, limit: int = 100):
 
 async def read_device_states(skip: int = 0, limit: int = 100):
     select_query = select(schemas.DeviceState).offset(skip).limit(limit)
-    result = await database.fetch_all(select_query)
-    print(result)
-    return result
+    return await database.fetch_all(select_query)
 
 
 async def read_device_additional_states(skip: int = 0, limit: int = 100):
     select_query = select(
         schemas.DeviceAdditionalState).offset(skip).limit(limit)
+    return await database.fetch_all(select_query)
+
+
+async def read_device_channels(skip: int = 0, limit: int = 100):
+    select_query = select(schemas.Channel).offset(skip).limit(limit)
     return await database.fetch_all(select_query)
 
 
@@ -40,3 +43,44 @@ async def read_devices_by_types(type_names: list[str], skip: int = 0, limit: int
     ).offset(skip).limit(limit)
     devices_by_types = await database.fetch_all(select_query)
     return devices_by_types
+
+
+async def read_device(device_id: int):
+    select_query = (
+        select(
+            schemas.Device,
+            schemas.DeviceType.name.label("type_name"),
+            schemas.DeviceModel.name.label("model_name"),
+            schemas.DeviceState.name.label("state_name"),
+            schemas.DeviceAdditionalState.name.label("additional_state_name")
+        )
+        .join(schemas.DeviceType)
+        .outerjoin(schemas.DeviceState)
+        .outerjoin(schemas.DeviceModel)
+        .outerjoin(schemas.DeviceAdditionalState)
+        .filter(schemas.Device.id == device_id)
+    )
+    device = await database.fetch_one(select_query)
+    return device
+
+
+async def read_devices_by_types_related(type_names: list[str], skip: int = 0, limit: int = 100):
+    select_query = (
+        select(
+            schemas.Device,
+            schemas.DeviceType.name.label("type_name"),
+            schemas.DeviceModel.name.label("model_name"),
+            schemas.DeviceState.name.label("state_name"),
+            schemas.DeviceAdditionalState.name.label("additional_state_name")
+        )
+        .join(schemas.Device.type_)
+        .outerjoin(schemas.Device.state)
+        .outerjoin(schemas.DeviceModel)
+        .outerjoin(schemas.Device.additional_state)
+        .filter(
+            schemas.DeviceType.name.in_(type_names)
+        )
+        .offset(skip).limit(limit)
+    )
+    device = await database.fetch_all(select_query)
+    return device

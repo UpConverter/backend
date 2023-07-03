@@ -37,10 +37,6 @@ class DeviceAdditionalState(BaseModel):
 class DeviceBase(BaseModel):
     id: int
     serial_number: int
-    type_id: int
-    model_id: Optional[int]
-    state_id: Optional[int]
-    additional_state_id: Optional[int]
 
 
 class DeviceCreate(DeviceBase):
@@ -48,9 +44,19 @@ class DeviceCreate(DeviceBase):
 
 
 class Device(DeviceBase):
+    type_id: int
+    model_id: Optional[int]
+    state_id: Optional[int]
+    additional_state_id: Optional[int]
+
     class Config:
         orm_mode = True
 
+class DeviceRelated(DeviceBase):
+    type_name: str
+    model_name: Optional[str]
+    state_name: Optional[str]
+    additional_state_name: Optional[str]
 
 class Channel(BaseModel):
     id: int
