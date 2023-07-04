@@ -24,6 +24,7 @@ class Connections(BaseModel):
     device_id: int
     device_name: str
     model_name: Optional[str]
+    state_name: Optional[str]
     connected_to_device_id: Optional[int]
     connected_to_device_name: Optional[str]
     connected_to_device_channel: Optional[str]
@@ -32,5 +33,6 @@ class Connections(BaseModel):
         orm_mode = True
 
 
-class ConnectionsTyped(Connections):
-    type_name: str
+class ConnectionsTyped(BaseModel):
+    config_cals: list[Connections]
+    config_upconv: list[Connections]

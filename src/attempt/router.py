@@ -23,8 +23,8 @@ async def get_attempts(skip: int = 0, limit: int = 100):
 @router.get("/attempts/last_success", response_model=AttemptFull)
 async def get_last_success_attempt():
     attempt = await read_last_success_attempt()
-    config_cals = await read_config_connections(attempt.configuration_id, device_type_names=["CAL"])
-    config_upconv = await read_config_connections(attempt.configuration_id, device_type_names=["UPCONVERTER"])
+    config_cals = await read_config_connections(attempt.configuration_id, device_type_name="CAL")
+    config_upconv = await read_config_connections(attempt.configuration_id, device_type_name="UPCONVERTER")
 
     if attempt:
         return {

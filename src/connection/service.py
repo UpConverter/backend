@@ -24,7 +24,7 @@ async def read_config(config_id: int):
 
 
 # { device_id: 1, model_name: 'Coaxial', connected_to_device_id: 0, connected_to_device_channel: 'SW1' },
-async def read_config_connections(config_id: int, device_type_names: list[str] = None):
+async def read_config_connections(config_id: int, device_type_name: str = None):
     main_device = aliased(schemas.Device)
     connected_device = aliased(schemas.Device)
 
@@ -35,6 +35,7 @@ async def read_config_connections(config_id: int, device_type_names: list[str] =
             main_device.name.label("device_name"),
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
+            schemas.DeviceState.name.label("state_name"),
             schemas.Connection.connected_to_device_id,
             connected_device.name.label("connected_to_device_name"),
             schemas.Channel.name.label("connected_to_device_channel")
@@ -43,14 +44,15 @@ async def read_config_connections(config_id: int, device_type_names: list[str] =
         .join(main_device, schemas.Connection.device_id == main_device.id)
         .join(schemas.DeviceModel, main_device.model_id == schemas.DeviceModel.id)
         .join(schemas.DeviceType, main_device.type_id == schemas.DeviceType.id)
+        .outerjoin(schemas.DeviceState, main_device.state_id == schemas.DeviceState.id)
         .join(connected_device, schemas.Connection.connected_to_device_id == connected_device.id)
         .join(schemas.Channel, schemas.Connection.connected_to_device_channel_id == schemas.Channel.id)
         .filter(schemas.Connection.configuration_id == config_id)
     )
 
-    if device_type_names:
+    if device_type_name:
         select_query = select_query.filter(
-            schemas.DeviceType.name.in_(device_type_names))
+            schemas.DeviceType.name == device_type_name)
 
     result = await database.fetch_all(select_query)
 

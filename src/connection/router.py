@@ -20,18 +20,22 @@ async def get_config(config_id: int):
         raise HTTPException(status_code=404, detail="Config not found")
 
 
-@router.get("/configs/{config_id}/connections", response_model=list[ConnectionsTyped])
+@router.get("/configs/{config_id}/connections", response_model=ConnectionsTyped)
 async def get_config_connections(config_id: int):
-    connections = await read_config_connections(config_id)
-    if connections:
-        return connections
+    config_cals = await read_config_connections(config_id, device_type_name="CAL")
+    config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
+    if config_cals or config_upconv:
+        return {
+            "config_cals": config_cals,
+            "config_upconv": config_upconv
+        }
     else:
         raise HTTPException(status_code=404, detail="Config not found")
 
 
 @router.get("/configs/{config_id}/cals", response_model=list[Connections])
 async def get_config_cals(config_id: int):
-    config_cals = await read_config_connections(config_id, device_type_names=["CAL"])
+    config_cals = await read_config_connections(config_id, device_type_name="CAL")
     if config_cals:
         return config_cals
     else:
@@ -40,7 +44,7 @@ async def get_config_cals(config_id: int):
 
 @router.get("/configs/{config_id}/upconverters", response_model=list[Connections])
 async def get_config_upconv(config_id: int):
-    config_upconv = await read_config_connections(config_id, device_type_names=["UPCONVERTER"])
+    config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
     if config_upconv:
         return config_upconv
     else:

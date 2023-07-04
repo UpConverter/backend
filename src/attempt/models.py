@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from src.connection.models import Connections
+from src.connection.models import ConnectionsTyped
 
 
 class AttemptBase(BaseModel):
@@ -26,7 +26,5 @@ class AttemptName(AttemptBase):
     config_name: str
 
 
-class AttemptFull(BaseModel):
+class AttemptFull(ConnectionsTyped):
     attempt: AttemptName
-    config_cals: list[Connections]
-    config_upconv: list[Connections]
