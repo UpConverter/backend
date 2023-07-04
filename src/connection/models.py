@@ -25,6 +25,7 @@ class Connections(BaseModel):
     device_name: str
     model_name: Optional[str]
     connected_to_device_id: Optional[int]
+    connected_to_device_name: Optional[str]
     connected_to_device_channel: Optional[str]
 
     class Config:
