@@ -11,4 +11,5 @@ engine = create_engine(DATABASE_URL)
 
 metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
 
-database = Database(DATABASE_URL, force_rollback=settings.ENVIRONMENT.is_testing)
+database = Database(
+    DATABASE_URL, force_rollback=settings.ENVIRONMENT.is_testing)

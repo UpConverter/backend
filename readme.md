@@ -14,9 +14,9 @@
 ```
 ### Заполняем базу данных по умолчанию
 ``` 
-    python -m src.data.initial_data 
+    python -m src.__data__.initial_data 
 ```
-> Чтобы добавить тестовые данные ``` python -m app.data.test_data ```
+> Чтобы добавить тестовые данные ``` python -m src.__data__.test_data ```
 ### Запускаем сервер
 ```
     uvicorn app.main:app --reload
