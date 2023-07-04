@@ -37,6 +37,7 @@ class DeviceAdditionalState(BaseModel):
 class DeviceBase(BaseModel):
     id: int
     serial_number: int
+    name: str
 
 
 class DeviceCreate(DeviceBase):

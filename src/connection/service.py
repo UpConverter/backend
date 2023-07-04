@@ -28,6 +28,7 @@ async def read_config_connections(config_id: int, device_type_names: list[str] =
         select(
             schemas.Connection.id,
             schemas.Connection.device_id,
+            schemas.Device.name.label("device_name"),
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
             schemas.Connection.connected_to_device_id,
