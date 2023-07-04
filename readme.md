@@ -14,7 +14,7 @@
 ```
 ### Заполняем базу данных по умолчанию
 ``` 
-    python -m app.data.initial_data 
+    python -m src.data.initial_data 
 ```
 > Чтобы добавить тестовые данные ``` python -m app.data.test_data ```
 ### Запускаем сервер

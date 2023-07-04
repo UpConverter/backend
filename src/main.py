@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from src.device.router import router as device_router
 from src.attempt.router import router as attempt_router
+from src.connection.router import router as connection_router
 from src.database import database
 from src.config import app_configs, settings
 
@@ -31,4 +32,4 @@ async def healthcheck() -> dict[str, str]:
 
 app.include_router(attempt_router, prefix="", tags=["port"])
 app.include_router(device_router, prefix="", tags=["device"])
-# app.include_router(configuration.router, prefix="", tags=["configuration"])
+app.include_router(connection_router, prefix="", tags=["config"])
