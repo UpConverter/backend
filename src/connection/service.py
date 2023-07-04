@@ -42,8 +42,8 @@ async def read_config_connections(config_id: int, device_type_names: list[str] =
     )
 
     if device_type_names:
-        select_query = select_query.filter(schemas.DeviceType.name.in_(device_type_names))
-
+        select_query = select_query.filter(
+            schemas.DeviceType.name.in_(device_type_names))
 
     result = await database.fetch_all(select_query)
 

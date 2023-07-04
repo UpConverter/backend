@@ -43,6 +43,8 @@ data = {
 }
 
 # Вызов функции заполнения базы данных при необходимости
+
+
 async def main():
     await fill_database(data)
 

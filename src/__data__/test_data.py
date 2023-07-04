@@ -4,7 +4,7 @@ from src.data.fill_database import fill_database
 # SA
 data = {
     # SA
-    "SA" : {
+    "SA": {
         "Device": [
             {"name": "SA", "serial_number": 1000001, "type_id": 1},
         ],
@@ -39,7 +39,7 @@ data = {
         ],
     },
     # CAl
-    "CAL" : {
+    "CAL": {
         "Device": [
 
             {"name": "Cal 1", "serial_number": 1000002, "type_id": 2,
@@ -50,8 +50,8 @@ data = {
              "model_id": 2, "state_id": 0},
         ],
     },
-    #UPCONVERTER
-    "UPCONVERTER" : {
+    # UPCONVERTER
+    "UPCONVERTER": {
         "Device": [
             # UPCONVERTERS
             {"name": "UPCONVERTER 1", "serial_number": 1000006, "type_id": 3, "model_id": 1,
@@ -75,6 +75,8 @@ data = {
 }
 
 # Вызов функции заполнения базы данных при необходимости
+
+
 async def main():
     for key in data:
         await fill_database(data[key])

@@ -2,29 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class Port(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class Speed(BaseModel):
-    id: int
-    value: int
-
-    class Config:
-        orm_mode = True
-
-
 class AttemptBase(BaseModel):
-    id: int
     configuration_id: int
     speed_id: int
     port_id: int
     success: bool
-    timestamp: datetime
 
 
 class AttemptCreate(AttemptBase):
@@ -32,5 +14,9 @@ class AttemptCreate(AttemptBase):
 
 
 class Attempt(AttemptBase):
+    id: int
+    timestamp: datetime
+
     class Config:
         orm_mode = True
+

@@ -9,7 +9,7 @@ router = APIRouter()
 async def get_configs():
     configs = await read_configs()
     return configs
-    
+
 
 @router.get("/configs/{config_id}", response_model=Configuration)
 async def get_config(config_id: int):
@@ -18,7 +18,6 @@ async def get_config(config_id: int):
         return config
     else:
         raise HTTPException(status_code=404, detail="Config not found")
-    
 
 
 @router.get("/configs/{config_id}/connections", response_model=list[ConnectionsTyped])
@@ -37,7 +36,7 @@ async def get_config_cals(config_id: int):
         return config_cals
     else:
         raise HTTPException(status_code=404, detail="Config not found")
-    
+
 
 @router.get("/configs/{config_id}/upconverters", response_model=list[Connections])
 async def get_config_upconv(config_id: int):
@@ -46,4 +45,3 @@ async def get_config_upconv(config_id: int):
         return config_cals
     else:
         raise HTTPException(status_code=404, detail="Config not found")
-    

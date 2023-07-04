@@ -3,6 +3,7 @@ from src.schemas import Base
 from sqlalchemy import insert
 from src.database import engine, database
 
+
 async def fill_database(data):
     Base.metadata.create_all(bind=engine)
 

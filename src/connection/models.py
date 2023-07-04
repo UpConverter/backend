@@ -30,14 +30,6 @@ class Connections(BaseModel):
     class Config:
         orm_mode = True
 
+
 class ConnectionsTyped(Connections):
     type_name: str
-
-
-class Attempt(BaseModel):
-    id: int
-    configuration_id: int
-    speed_id: int
-    port_id: int
-    success: bool
-    timestamp: datetime
