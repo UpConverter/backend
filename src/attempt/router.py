@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from src.attempt.models import AttemptCreate, Attempt
+from src.attempt.models import Attempt, AttemptCreate, AttemptFull
 from src.attempt.service import (
     read_attempts,
     get_attempt,
@@ -8,6 +8,8 @@ from src.attempt.service import (
     delete_attempt,
     read_last_success_attempt,
 )
+from src.connection.service import read_config_connections
+
 
 router = APIRouter()
 
@@ -18,11 +20,18 @@ async def get_attempts(skip: int = 0, limit: int = 100):
     return attempts
 
 
-@router.get("/attempts/last_success", response_model=Attempt)
+@router.get("/attempts/last_success", response_model=AttemptFull)
 async def get_last_success_attempt():
     attempt = await read_last_success_attempt()
+    config_cals = await read_config_connections(attempt.configuration_id, device_type_names=["CAL"])
+    config_upconv = await read_config_connections(attempt.configuration_id, device_type_names=["UPCONVERTER"])
+
     if attempt:
-        return attempt
+        return {
+            "attempt": attempt,
+            "config_cals": config_cals,
+            "config_upconv": config_upconv
+        }
     else:
         raise HTTPException(
             status_code=404, detail="No successful attempts found")

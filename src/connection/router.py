@@ -40,8 +40,8 @@ async def get_config_cals(config_id: int):
 
 @router.get("/configs/{config_id}/upconverters", response_model=list[Connections])
 async def get_config_upconv(config_id: int):
-    config_cals = await read_config_connections(config_id, device_type_names=["UPCONVERTER"])
-    if config_cals:
-        return config_cals
+    config_upconv = await read_config_connections(config_id, device_type_names=["UPCONVERTER"])
+    if config_upconv:
+        return config_upconv
     else:
         raise HTTPException(status_code=404, detail="Config not found")
