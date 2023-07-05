@@ -11,6 +11,17 @@ async def get_configs():
     return configs
 
 
+@router.post("/configs", response_model=Configuration)
+async def create_new_config(config: ConfigurationCreate):
+    return await create_config(config)
+
+
+@router.put("/configs/{config_id}")
+async def update_existing_configuration(config_id: int, connections: ConnectionsTyped):
+    await update_configuration(config_id, connections)
+    return {"message": "Connections updated successfully"}
+
+
 @router.get("/configs/{config_id}", response_model=Configuration)
 async def get_config(config_id: int):
     config = await read_config(config_id)

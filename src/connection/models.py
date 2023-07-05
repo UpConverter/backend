@@ -3,19 +3,26 @@ from typing import Optional
 from datetime import datetime
 
 
-class Configuration(BaseModel):
-    id: int
+class ConfigurationBase(BaseModel):
     name: str
+
+
+class Configuration(ConfigurationBase):
+    id: int
 
     class Config:
         orm_mode = True
+
+
+class ConfigurationCreate(ConfigurationBase):
+    pass
 
 
 class Connection(BaseModel):
     id: int
     configuration_id: int
     device_id: int
-    connected_to_device_id: int
+    connected_to_device_id: Optional[int]
     connected_to_device_channel_id: int
 
 
@@ -26,7 +33,8 @@ class Connections(BaseModel):
     model_name: Optional[str]
     state_name: Optional[str]
     connected_to_device_id: Optional[int]
-    connected_to_device_name: Optional[str]
+    connected_to_device: Optional[str]
+    connected_to_device_channel_id: Optional[int]
     connected_to_device_channel: Optional[str]
 
     class Config:

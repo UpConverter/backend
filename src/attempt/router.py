@@ -37,6 +37,12 @@ async def get_last_success_attempt():
             status_code=404, detail="No successful attempts found")
 
 
+# TODO: Метод должен пытаться применить попытку,
+# сначала сохраняя конфигурацию,
+# ( Возможно здесь лучше убрать кнопку "Сохранить" на фронте
+#  Или поставить на фронте предварительное сохранение )
+# после чего запоминая состояние приборов в текущий момент
+# после чего пытаться переключить в новое положение считывая из конфигурации
 @router.post("/attempts", response_model=Attempt)
 async def create_new_attempt(attempt: AttemptCreate):
     return await create_attempt(attempt)

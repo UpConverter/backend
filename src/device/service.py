@@ -8,14 +8,38 @@ async def read_device_types(skip: int = 0, limit: int = 100):
     return await database.fetch_all(select_query)
 
 
+# TODO: Добавить обработку ошибки
+async def get_device_type_id(type_name: str) -> int:
+    query = select(schemas.DeviceType.id).where(
+        schemas.DeviceType.name == type_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.id if result else None
+
+
 async def read_device_models(skip: int = 0, limit: int = 100):
     select_query = select(schemas.DeviceModel).offset(skip).limit(limit)
     return await database.fetch_all(select_query)
 
 
+# TODO: Добавить обработку ошибки
+async def get_device_model_id(model_name: str) -> int:
+    query = select(schemas.DeviceModel.id).where(
+        schemas.DeviceModel.name == model_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.id if result else None
+
+
 async def read_device_states(skip: int = 0, limit: int = 100):
     select_query = select(schemas.DeviceState).offset(skip).limit(limit)
     return await database.fetch_all(select_query)
+
+
+# TODO: Добавить обработку ошибки
+async def get_device_state_id(state_name: str) -> int:
+    query = select(schemas.DeviceState.id).where(
+        schemas.DeviceState.name == state_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.id if result else None
 
 
 async def read_device_additional_states(skip: int = 0, limit: int = 100):
@@ -27,6 +51,23 @@ async def read_device_additional_states(skip: int = 0, limit: int = 100):
 async def read_device_channels(skip: int = 0, limit: int = 100):
     select_query = select(schemas.Channel).offset(skip).limit(limit)
     return await database.fetch_all(select_query)
+
+# TODO: Добавить обработку ошибки
+
+
+async def get_device_channel_id(channel_name: str) -> int:
+    query = select(schemas.Channel.id).where(
+        schemas.Channel.name == channel_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.id if result else None
+
+
+# TODO: Добавить обработку ошибки
+async def get_device_id(device_name: str) -> int:
+    query = select(schemas.Device.id).where(
+        schemas.Device.name == device_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.device_id if result else None
 
 
 async def read_devices_by_type(type_name: str, skip: int = 0, limit: int = 100):
