@@ -35,29 +35,35 @@ class DeviceAdditionalState(BaseModel):
 
 
 class DeviceBase(BaseModel):
-    id: int
-    serial_number: int
     name: str
 
 
 class DeviceCreate(DeviceBase):
-    pass
-
-
-class Device(DeviceBase):
     type_id: int
     model_id: Optional[int]
     state_id: Optional[int]
     additional_state_id: Optional[int]
 
+
+class Device(DeviceCreate):
+    id: int
+    serial_number: int
+
     class Config:
         orm_mode = True
 
-class DeviceRelated(DeviceBase):
+
+class DeviceRelatedCreate(DeviceBase):
     type_name: str
     model_name: Optional[str]
     state_name: Optional[str]
     additional_state_name: Optional[str]
+
+
+class DeviceRelated(DeviceRelatedCreate):
+    id: int
+    serial_number: int
+
 
 class Channel(BaseModel):
     id: int

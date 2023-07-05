@@ -1,6 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert, update, delete
 from src import schemas
+from src.device import models
 from src.database import database
+from src.device.utils import gen_unique_serial_number
 
 
 async def read_device_types(skip: int = 0, limit: int = 100):
@@ -48,18 +50,35 @@ async def read_device_additional_states(skip: int = 0, limit: int = 100):
     return await database.fetch_all(select_query)
 
 
+# TODO: Добавить обработку ошибки
+async def get_device_additional_state_id(additional_state_name: str) -> int:
+    query = select(schemas.DeviceAdditionalState.id).where(
+        schemas.DeviceAdditionalState.name == additional_state_name).limit(1)
+    result = await database.fetch_one(query)
+    return result.id if result else None
+
+
 async def read_device_channels(skip: int = 0, limit: int = 100):
     select_query = select(schemas.Channel).offset(skip).limit(limit)
     return await database.fetch_all(select_query)
 
+
 # TODO: Добавить обработку ошибки
-
-
 async def get_device_channel_id(channel_name: str) -> int:
     query = select(schemas.Channel.id).where(
         schemas.Channel.name == channel_name).limit(1)
     result = await database.fetch_one(query)
     return result.id if result else None
+
+
+async def get_device(device_id: int):
+    select_query = (
+        select(schemas.Device)
+        .filter(
+            schemas.Device.id == device_id
+        )
+    )
+    return await database.fetch_one(select_query)
 
 
 # TODO: Добавить обработку ошибки
@@ -68,6 +87,69 @@ async def get_device_id(device_name: str) -> int:
         schemas.Device.name == device_name).limit(1)
     result = await database.fetch_one(query)
     return result.device_id if result else None
+
+
+async def create_device(device: models.DeviceRelatedCreate):
+    serial_number = await gen_unique_serial_number()
+    type_id = await get_device_type_id(device.type_name)
+    model_id = await get_device_model_id(device.model_name)
+    state_id = await get_device_state_id(device.state_name)
+    additional_state_id = await get_device_additional_state_id(device.additional_state_name)
+
+    insert_query = (
+        insert(schemas.Device)
+        .values(
+            {
+                "name": device.name,
+                "serial_number": serial_number,
+                "type_id": type_id,
+                "model_id": model_id,
+                "state_id": state_id,
+                "additional_state_id": additional_state_id,
+            }
+        )
+    )
+    device_id = await database.execute(insert_query)
+    return await read_device(device_id)
+
+
+async def update_device(device_id: int, device: models.DeviceRelatedCreate):
+    update_values = {
+        "name": device.name,
+    }
+
+    if device.type_name:
+        type_id = await get_device_type_id(device.type_name)
+        update_values["type_id"] = type_id
+
+    if device.model_name:
+        model_id = await get_device_model_id(device.model_name)
+        update_values["model_id"] = model_id
+
+    if device.state_name:
+        state_id = await get_device_state_id(device.state_name)
+        update_values["state_id"] = state_id
+
+    if device.additional_state_name:
+        additional_state_id = await get_device_additional_state_id(device.additional_state_name)
+        update_values["additional_state_id"] = additional_state_id
+
+    update_query = (
+        update(schemas.Device)
+        .where(schemas.Device.id == device_id)
+        .values(**update_values)
+    )
+    await database.execute(update_query)
+    return await read_device(device_id)
+
+
+async def delete_device(device_id: int):
+    delete_query = (
+        delete(schemas.Device)
+        .where(schemas.Device.id == device_id)
+    )
+
+    return await database.execute(delete_query)
 
 
 async def read_devices_by_type(type_name: str, skip: int = 0, limit: int = 100):
