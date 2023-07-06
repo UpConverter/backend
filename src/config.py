@@ -4,24 +4,32 @@ from pydantic import BaseSettings, PostgresDsn, root_validator
 
 from src.constants import Environment
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 class Config(BaseSettings):
     # SQLite db
     # DATABASE_URL = "sqlite:///./test.db"
     # Для PostgreSQL:
-    DATABASE_URL: PostgresDsn = "postgresql://timofey:tst1579@localhost:5432/upconverter"
+    DATABASE_USER: str
+    DATABASE_PASSWORD: str
+    DATABASE_NAME: str
+    DATABASE_HOST: str
+    DATABASE_PORT: str
+
+    @property
+    def DATABASE_URL(self) -> PostgresDsn:
+        return f"postgresql://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
 
     # SITE_DOMAIN: str = "myapp.com"
-
-    # ENVIRONMENT: Environment = Environment.PRODUCTION
     ENVIRONMENT: Environment = Environment.LOCAL
-
     SENTRY_DSN: str | None = "100"
-
-    CORS_ORIGINS: list[str] = ["http://localhost:8000", "http://localhost:3000"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:8000", "http://localhost:3000"]
     CORS_ORIGINS_REGEX: str | None
     CORS_HEADERS: list[str] = ["*"]
-
     APP_VERSION: str = "1"
 
     @root_validator(skip_on_failure=True)
