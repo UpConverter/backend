@@ -1,5 +1,5 @@
 import asyncio
-from src.data.fill_database import fill_database
+from src.__data__.fill_database import fill_database
 
 # SA
 data = {
@@ -13,7 +13,7 @@ data = {
             {"name": "Конфигурация 2"},
             {"name": "Конфигурация 3"},
             {"name": "Конфигурация 4"},
-            {"name": "Конфигурация 5"},
+            {"name": "Нормальная конфигурация"},
         ],
         "Connection": [
             {"configuration_id": 1, "device_id": 2, "connected_to_device_id": 1,
@@ -36,6 +36,9 @@ data = {
              "connected_to_device_channel_id": 3},
             {"configuration_id": 1, "device_id": 12, "connected_to_device_id": 3,
              "connected_to_device_channel_id": 4},
+
+            {"configuration_id": 5, "device_id": 5, "connected_to_device_id": 1,
+             "connected_to_device_channel_id": 1},
         ],
     },
     # CAl
@@ -43,11 +46,13 @@ data = {
         "Device": [
 
             {"name": "Cal 1", "serial_number": 1000002, "type_id": 2,
-             "model_id": 1, "state_id": 0},
+             "model_id": 1},
             {"name": "Cal 2", "serial_number": 1000003, "type_id": 2,
-             "model_id": 2, "state_id": 0},
+             "model_id": 2},
             {"name": "Cal 3", "serial_number": 1000004, "type_id": 2,
-             "model_id": 2, "state_id": 0},
+             "model_id": 2},
+            {"name": "WORKING CAL", "serial_number": 1000005, "type_id": 2,
+             "model_id": 3},
         ],
     },
     # UPCONVERTER

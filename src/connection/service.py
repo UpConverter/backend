@@ -61,7 +61,7 @@ async def create_config(config: models.ConfigurationCreate):
 
 
 # { device_id: 1, model_name: 'Coaxial', connected_to_device_id: 0, connected_to_device_channel: 'SW1' },
-async def read_config_connections(config_id: int, device_type_name: str = None):
+async def read_config_connections(config_id: int, device_type_name: str = None) -> models.Connections:
     main_device = aliased(schemas.Device)
     connected_device = aliased(schemas.Device)
 

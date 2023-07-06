@@ -1,5 +1,5 @@
 import asyncio
-from src.data.fill_database import fill_database
+from src.__data__.fill_database import fill_database
 
 data = {
     "DeviceType": [
@@ -9,7 +9,8 @@ data = {
     ],
     "DeviceModel": [
         {"name": "COAXIAL"},
-        {"name": "SOLID STATE"}
+        {"name": "SOLID STATE"},
+        {"name": "SMD"},
     ],
     "DeviceState": [
         {"name": "CRYO"},

@@ -2,6 +2,9 @@ from sqlalchemy import select, insert, delete, update, func, and_
 from src.database import database
 from src.attempt import models
 from src import schemas
+from src.connection.service import read_config_connections
+from src.attempt.driver import apply_attempt
+from src.utils import datetime_msc_now
 from datetime import datetime
 
 
@@ -45,6 +48,10 @@ async def read_last_success_attempt():
 
 
 async def create_attempt(attempt: models.AttemptCreate):
+    config_cals = await read_config_connections(attempt.configuration_id, device_type_name="CAL")
+    config_upconv = await read_config_connections(attempt.configuration_id, device_type_name="UPCONVERTER")
+    success = apply_attempt(config_cals, config_upconv)
+
     insert_query = (
         insert(schemas.Attempt)
         .values(
@@ -52,8 +59,8 @@ async def create_attempt(attempt: models.AttemptCreate):
                 "configuration_id": attempt.configuration_id,
                 "speed_id": attempt.speed_id,
                 "port_id": attempt.port_id,
-                "success": attempt.success,
-                "timestamp": datetime.utcnow(),
+                "success": success,
+                "timestamp": datetime_msc_now(),
             }
         )
     )

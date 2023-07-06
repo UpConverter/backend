@@ -7,7 +7,6 @@ class AttemptBase(BaseModel):
     configuration_id: int
     speed_id: int
     port_id: int
-    success: bool
 
 
 class AttemptCreate(AttemptBase):
@@ -16,6 +15,7 @@ class AttemptCreate(AttemptBase):
 
 class Attempt(AttemptBase):
     id: int
+    success: bool
     timestamp: datetime
 
     class Config:
