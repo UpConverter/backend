@@ -1,7 +1,8 @@
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import delete, insert, select, update
+
 from src import schemas
-from src.device import models
 from src.database import database
+from src.device import models
 from src.device.utils import gen_unique_serial_number
 
 

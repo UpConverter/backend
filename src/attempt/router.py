@@ -1,15 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from src.attempt.models import Attempt, AttemptCreate, AttemptFull
-from src.attempt.service import (
-    read_attempts,
-    get_attempt,
-    create_attempt,
-    update_attempt,
-    delete_attempt,
-    read_last_success_attempt,
-)
-from src.connection.service import read_config_connections
 
+from src.attempt.models import Attempt, AttemptCreate, AttemptFull
+from src.attempt.service import (create_attempt, delete_attempt, get_attempt,
+                                 read_attempts, read_last_success_attempt,
+                                 update_attempt)
+from src.connection.service import read_config_connections
 
 router = APIRouter()
 

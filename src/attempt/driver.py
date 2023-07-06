@@ -1,6 +1,8 @@
-from src.connection.models import Connections
-from src.attempt.constants import MAIN_CAL
 import pyvisa
+
+from src.attempt.constants import MAIN_CAL
+from src.connection.models import Connections
+
 
 def apply_attempt(cals: Connections, upconv: Connections) -> bool:
     success = True

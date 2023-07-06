@@ -1,9 +1,10 @@
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import aliased
+
 from src import schemas
 from src.connection import models
 from src.database import database
-from src.device.service import get_device_id, get_device_channel_id
+from src.device.service import get_device_channel_id, get_device_id
 
 
 async def read_configs():

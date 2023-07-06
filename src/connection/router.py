@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException
+
 from src.connection.models import *
 from src.connection.service import *
 

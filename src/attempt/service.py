@@ -1,11 +1,13 @@
-from sqlalchemy import select, insert, delete, update, func, and_
-from src.database import database
-from src.attempt import models
-from src import schemas
-from src.connection.service import read_config_connections
-from src.attempt.driver import apply_attempt
-from src.utils import datetime_msc_now
 from datetime import datetime
+
+from sqlalchemy import and_, delete, func, insert, select, update
+
+from src import schemas
+from src.attempt import models
+from src.attempt.driver import apply_attempt
+from src.connection.service import read_config_connections
+from src.database import database
+from src.utils import datetime_msc_now
 
 
 async def read_attempts(skip: int = 0, limit: int = 100):

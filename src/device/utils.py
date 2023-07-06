@@ -1,4 +1,5 @@
 from sqlalchemy import select
+
 from src import schemas
 from src.database import database
 
