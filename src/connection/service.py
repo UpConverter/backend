@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, delete
 from sqlalchemy.orm import aliased
 from src import schemas
 from src.connection import models
@@ -23,6 +23,23 @@ async def read_config(config_id: int):
         .filter(schemas.Configuration.id == config_id)
     )
     return await database.fetch_one(select_query)
+
+
+async def delete_configuration(config_id: int):
+    async with database.transaction():
+        # Удаление всех записей из таблицы connection с указанным configuration_id
+        delete_connection_query = (
+            delete(schemas.Connection)
+            .where(schemas.Connection.configuration_id == config_id)
+        )
+        await database.execute(delete_connection_query)
+
+        # Удаление самой конфигурации
+        delete_configuration_query = (
+            delete(schemas.Configuration)
+            .where(schemas.Configuration.id == config_id)
+        )
+        await database.execute(delete_configuration_query)
 
 
 async def create_config(config: models.ConfigurationCreate):
@@ -114,3 +131,49 @@ async def update_connections(config_id: int, connections: models.ConnectionsType
 async def update_configuration(config_id: int, connections: models.ConnectionsTyped):
     async with database.transaction():
         await update_connections(config_id, connections)
+
+
+async def get_connection(connection_id: int):
+    select_query = select(schemas.Connection).where(
+        schemas.Connection.id == connection_id
+    )
+    return await database.fetch_one(select_query)
+
+
+async def create_connection(config_id: int, connection: models.ConnectionCreate):
+    insert_query = (
+        insert(schemas.Connection)
+        .values(
+            {
+                "configuration_id": config_id,
+                "device_id": connection.device_id,
+                "connected_to_device_id": connection.connected_to_device_id,
+                "connected_to_device_channel_id": connection.connected_to_device_channel_id
+            }
+        )
+    )
+    connection_id = await database.execute(insert_query)
+    return await get_connection(connection_id)
+
+
+async def update_connection(connection_id: int, connection: models.ConnectionCreate):
+    update_query = (
+        update(schemas.Connection)
+        .where(schemas.Connection.id == connection_id)
+        .values(
+            device_id=connection.device_id,
+            connected_to_device_id=connection.connected_to_device_id,
+            connected_to_device_channel_id=connection.connected_to_device_channel_id,
+        )
+    )
+    await database.execute(update_query)
+    return await get_connection(connection_id)
+
+
+async def delete_connection(connection_id: int):
+    delete_query = (
+        delete(schemas.Connection)
+        .where(schemas.Connection.id == connection_id)
+    )
+
+    return await database.execute(delete_query)

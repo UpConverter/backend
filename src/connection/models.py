@@ -18,6 +18,12 @@ class ConfigurationCreate(ConfigurationBase):
     pass
 
 
+class ConnectionCreate(BaseModel):
+    device_id: int
+    connected_to_device_id: Optional[int]
+    connected_to_device_channel_id: Optional[int]
+
+
 class Connection(BaseModel):
     id: int
     configuration_id: int

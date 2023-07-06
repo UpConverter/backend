@@ -22,6 +22,16 @@ async def update_existing_configuration(config_id: int, connections: Connections
     return {"message": "Connections updated successfully"}
 
 
+@router.delete("/configs/{config_id}")
+async def delete_existing_configuration(config_id: int):
+    config = await read_config(config_id)
+    if config:
+        await delete_configuration(config_id)
+        return {"message": f"Config deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Config not found")
+
+
 @router.get("/configs/{config_id}", response_model=Configuration)
 async def get_config(config_id: int):
     config = await read_config(config_id)
@@ -42,6 +52,34 @@ async def get_config_connections(config_id: int):
         }
     else:
         raise HTTPException(status_code=404, detail="Config not found")
+
+
+@router.post("/configs/{config_id}/connections", response_model=Connection)
+async def create_new_connection(config_id: int, connection: ConnectionCreate):
+    config = await read_config(config_id)
+    if config:
+        return await create_connection(config_id, connection)
+    else:
+        raise HTTPException(status_code=404, detail="Config not found")
+
+
+@router.put("/connections/{connection_id}", response_model=Connection)
+async def update_existing_connection(connection_id: int, updated_connection: ConnectionCreate):
+    connection = await get_connection(connection_id)
+    if connection:
+        return await update_connection(connection_id, updated_connection)
+    else:
+        raise HTTPException(status_code=404, detail="Connection not found")
+
+
+@router.delete("/connections/{connection_id}")
+async def delete_existing_connection(connection_id: int):
+    connection = await get_connection(connection_id)
+    if connection:
+        await delete_connection(connection_id)
+        return {"message": f"Connection deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Connection not found")
 
 
 @router.get("/configs/{config_id}/cals", response_model=list[Connections])
