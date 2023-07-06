@@ -1,4 +1,5 @@
 import asyncio
+
 from src.__data__.fill_database import fill_database
 
 # SA
@@ -14,31 +15,6 @@ data = {
             {"name": "Конфигурация 3"},
             {"name": "Конфигурация 4"},
             {"name": "Нормальная конфигурация"},
-        ],
-        "Connection": [
-            {"configuration_id": 1, "device_id": 2, "connected_to_device_id": 1,
-             "connected_to_device_channel_id": 6},
-
-            {"configuration_id": 1, "device_id": 5, "connected_to_device_id": 2,
-             "connected_to_device_channel_id": 1},
-            {"configuration_id": 1, "device_id": 6, "connected_to_device_id": 2,
-             "connected_to_device_channel_id": 3},
-            {"configuration_id": 1, "device_id": 7, "connected_to_device_id": 2,
-             "connected_to_device_channel_id": 4},
-            {"configuration_id": 1, "device_id": 8, "connected_to_device_id": 2,
-             "connected_to_device_channel_id": 5},
-
-            {"configuration_id": 1, "device_id": 9, "connected_to_device_id": 3,
-             "connected_to_device_channel_id": 1},
-            {"configuration_id": 1, "device_id": 10, "connected_to_device_id": 3,
-             "connected_to_device_channel_id": 2},
-            {"configuration_id": 1, "device_id": 11, "connected_to_device_id": 3,
-             "connected_to_device_channel_id": 3},
-            {"configuration_id": 1, "device_id": 12, "connected_to_device_id": 3,
-             "connected_to_device_channel_id": 4},
-
-            {"configuration_id": 5, "device_id": 5, "connected_to_device_id": 1,
-             "connected_to_device_channel_id": 1},
         ],
     },
     # CAl
@@ -75,6 +51,31 @@ data = {
              "state_id": 2, "additional_state_id": 2},
             {"name": "UPCONVERTER 8", "serial_number": 1000013, "type_id": 3, "model_id": 2,
              "state_id": 1, "additional_state_id": 1},
+        ],
+        "Connection": [
+            {"configuration_id": 1, "device_id": 2, "connected_to_device_id": 1,
+             "connected_to_device_channel_id": 6},
+
+            {"configuration_id": 1, "device_id": 5, "connected_to_device_id": 2,
+             "connected_to_device_channel_id": 1},
+            {"configuration_id": 1, "device_id": 6, "connected_to_device_id": 2,
+             "connected_to_device_channel_id": 3},
+            {"configuration_id": 1, "device_id": 7, "connected_to_device_id": 2,
+             "connected_to_device_channel_id": 4},
+            {"configuration_id": 1, "device_id": 8, "connected_to_device_id": 2,
+             "connected_to_device_channel_id": 5},
+
+            {"configuration_id": 1, "device_id": 9, "connected_to_device_id": 3,
+             "connected_to_device_channel_id": 1},
+            {"configuration_id": 1, "device_id": 10, "connected_to_device_id": 3,
+             "connected_to_device_channel_id": 2},
+            {"configuration_id": 1, "device_id": 11, "connected_to_device_id": 3,
+             "connected_to_device_channel_id": 3},
+            {"configuration_id": 1, "device_id": 12, "connected_to_device_id": 3,
+             "connected_to_device_channel_id": 4},
+
+            {"configuration_id": 5, "device_id": 5, "connected_to_device_id": 1,
+             "connected_to_device_channel_id": 1},
         ],
     }
 }

@@ -1,4 +1,5 @@
 import asyncio
+
 from src.__data__.fill_database import fill_database
 
 data = {

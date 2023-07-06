@@ -1,7 +1,5 @@
 from databases import Database
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import MetaData, create_engine
 
 from src.config import settings
 from src.constants import DB_NAMING_CONVENTION

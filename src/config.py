@@ -7,12 +7,9 @@ from src.constants import Environment
 
 class Config(BaseSettings):
     # SQLite db
-    DATABASE_URL = "sqlite:///./test.db"
+    # DATABASE_URL = "sqlite:///./test.db"
     # Для PostgreSQL:
-    # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/db_name"
-    # Или
-    # DATABASE_URL: PostgresDsn
-    # REDIS_URL: RedisDsn
+    DATABASE_URL: PostgresDsn = "postgresql://timofey:tst1579@localhost:5432/upconverter"
 
     # SITE_DOMAIN: str = "myapp.com"
 
@@ -21,7 +18,7 @@ class Config(BaseSettings):
 
     SENTRY_DSN: str | None = "100"
 
-    CORS_ORIGINS: list[str] = ["http://localhost:8000"]
+    CORS_ORIGINS: list[str] = ["http://localhost:8000", "http://localhost:3000"]
     CORS_ORIGINS_REGEX: str | None
     CORS_HEADERS: list[str] = ["*"]
 
