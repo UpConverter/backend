@@ -4,6 +4,21 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class ConfigurationBase(BaseModel):
+    name: str
+
+
+class Configuration(ConfigurationBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ConfigurationCreate(ConfigurationBase):
+    pass
+
+
 class ConnectionCreate(BaseModel):
     device_id: int
     connected_to_device_id: Optional[int]

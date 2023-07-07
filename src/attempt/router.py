@@ -4,7 +4,7 @@ from src.attempt.models import Attempt, AttemptCreate, AttemptFull
 from src.attempt.service import (create_attempt, delete_attempt, get_attempt,
                                  read_attempts, read_last_success_attempt,
                                  update_attempt)
-from src.connection.service import read_config_connections
+from src.configuration.service import read_config_connections
 
 router = APIRouter()
 

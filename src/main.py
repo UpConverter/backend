@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.attempt.router import router as attempt_router
 from src.config import app_configs, settings
+from src.configuration.router import router as config_router
 from src.connection.router import router as connection_router
 from src.database import database
 from src.device.router import router as device_router
@@ -51,5 +52,7 @@ async def healthcheck() -> dict[str, str]:
 app.include_router(port_router, prefix="/ports", tags=["ports"])
 app.include_router(speed_router, prefix="/speeds", tags=["speeds"])
 app.include_router(device_router, prefix="/devices", tags=["devices"])
-app.include_router(connection_router, prefix="/configs", tags=["configs"])
+app.include_router(connection_router, prefix="/connections",
+                   tags=["connections"])
+app.include_router(config_router, prefix="/configs", tags=["configs"])
 app.include_router(attempt_router, prefix="/attempts", tags=["attempts"])

@@ -5,7 +5,7 @@ from sqlalchemy import and_, delete, func, insert, select, update
 from src import schemas
 from src.attempt import models
 from src.attempt.driver import apply_attempt
-from src.connection.service import read_config_connections
+from src.configuration.service import read_config_connections
 from src.database import database
 from src.utils import datetime_msc_now
 
