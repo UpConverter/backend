@@ -1,5 +1,28 @@
 # Backend часть для Up Converter
 > [Frontend репозиторий](https://github.com/TimofeyTst/up_converter_frontend) 
+## Настройка из докера
+Предварительно нужно создать базу данных Postgres и файл ```.env``` в корне проекта по шаблону:
+```
+DATABASE_URL=postgresql://POSTGRES_USER:PASSWORD@upconverter_db:5432/upconverter
+
+SITE_DOMAIN=0.0.0.0
+SECURE_COOKIES=false
+
+ENVIRONMENT=LOCAL
+
+CORS_HEADERS=["*"]
+CORS_ORIGINS=["http://localhost:3000"]
+```
+Далее надо освободить порт, используемый Postgres, после чего запускаем контейнер:
+
+```
+    docker network create upconverter_main
+    docker-compose up -d --build
+```
+### Linter
+```
+    docker compose exec app format
+```
 ## Настройка под Linux Ubuntu
 ### При необходимости создайте виртуальное окружение в Python
 > Можно пропустить этот шаг
@@ -19,7 +42,7 @@
 > Чтобы добавить тестовые данные ``` python -m src.__data__.test_data ```
 ### Запускаем сервер
 ```
-    uvicorn app.main:app --reload
+    uvicorn src.main:app --reload
 ```
 
 ------

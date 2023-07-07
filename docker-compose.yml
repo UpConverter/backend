@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  upconverter_backend:
+    container_name: upconverter_backend
+    image: upconverter_backend_image
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - upconverter_db
+
+  upconverter_db:
+    container_name: upconverter_db
+    hostname: upconverter_db
+    image: library/postgres:14.1
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=upconverter
+    volumes:
+      - app_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  app_pg_data:
+    driver: "local"
+
+networks:
+  default:
+    external: true
+    name: upconverter_main
