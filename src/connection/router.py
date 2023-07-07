@@ -6,24 +6,24 @@ from src.connection.service import *
 router = APIRouter()
 
 
-@router.get("/configs", response_model=list[Configuration])
+@router.get("/", response_model=list[Configuration])
 async def get_configs():
     configs = await read_configs()
     return configs
 
 
-@router.post("/configs", response_model=Configuration)
+@router.post("/", response_model=Configuration)
 async def create_new_config(config: ConfigurationCreate):
     return await create_config(config)
 
 
-@router.put("/configs/{config_id}")
+@router.put("/{config_id}")
 async def update_existing_configuration(config_id: int, connections: ConnectionsTyped):
     await update_configuration(config_id, connections)
     return {"message": "Connections updated successfully"}
 
 
-@router.delete("/configs/{config_id}")
+@router.delete("/{config_id}")
 async def delete_existing_configuration(config_id: int):
     config = await read_config(config_id)
     if config:
@@ -33,7 +33,7 @@ async def delete_existing_configuration(config_id: int):
         raise HTTPException(status_code=404, detail="Config not found")
 
 
-@router.get("/configs/{config_id}", response_model=Configuration)
+@router.get("/{config_id}", response_model=Configuration)
 async def get_config(config_id: int):
     config = await read_config(config_id)
     if config:
@@ -42,7 +42,7 @@ async def get_config(config_id: int):
         raise HTTPException(status_code=404, detail="Config not found")
 
 
-@router.get("/configs/{config_id}/connections", response_model=ConnectionsTyped)
+@router.get("/{config_id}/connections", response_model=ConnectionsTyped)
 async def get_config_connections(config_id: int):
     config_cals = await read_config_connections(config_id, device_type_name="CAL")
     config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
@@ -55,7 +55,7 @@ async def get_config_connections(config_id: int):
         raise HTTPException(status_code=404, detail="Config not found")
 
 
-@router.post("/configs/{config_id}/connections", response_model=Connection)
+@router.post("/{config_id}/connections", response_model=Connection)
 async def create_new_connection(config_id: int, connection: ConnectionCreate):
     config = await read_config(config_id)
     if config:
@@ -83,7 +83,7 @@ async def delete_existing_connection(connection_id: int):
         raise HTTPException(status_code=404, detail="Connection not found")
 
 
-@router.get("/configs/{config_id}/cals", response_model=list[Connections])
+@router.get("/{config_id}/cals", response_model=list[Connections])
 async def get_config_cals(config_id: int):
     config_cals = await read_config_connections(config_id, device_type_name="CAL")
     if config_cals:
@@ -92,7 +92,7 @@ async def get_config_cals(config_id: int):
         raise HTTPException(status_code=404, detail="Config not found")
 
 
-@router.get("/configs/{config_id}/upconverters", response_model=list[Connections])
+@router.get("/{config_id}/upconverters", response_model=list[Connections])
 async def get_config_upconv(config_id: int):
     config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
     if config_upconv:

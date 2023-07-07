@@ -9,13 +9,13 @@ from src.connection.service import read_config_connections
 router = APIRouter()
 
 
-@router.get("/attempts", response_model=list[Attempt])
+@router.get("/", response_model=list[Attempt])
 async def get_attempts(skip: int = 0, limit: int = 100):
     attempts = await read_attempts(skip=skip, limit=limit)
     return attempts
 
 
-@router.get("/attempts/last_success", response_model=AttemptFull)
+@router.get("/last_success", response_model=AttemptFull)
 async def get_last_success_attempt():
     attempt = await read_last_success_attempt()
     config_cals = await read_config_connections(attempt.configuration_id, device_type_name="CAL")
@@ -38,12 +38,12 @@ async def get_last_success_attempt():
 #  Или поставить на фронте предварительное сохранение )
 # после чего запоминая состояние приборов в текущий момент
 # после чего пытаться переключить в новое положение считывая из конфигурации
-@router.post("/attempts", response_model=Attempt)
+@router.post("/", response_model=Attempt)
 async def create_new_attempt(attempt: AttemptCreate):
     return await create_attempt(attempt)
 
 
-@router.put("/attempts/{attempt_id}", response_model=Attempt)
+@router.put("/{attempt_id}", response_model=Attempt)
 async def update_existing_attempt(attempt_id: int, updated_attempt: AttemptCreate):
     attempt = await get_attempt(attempt_id)
     if attempt:
@@ -52,7 +52,7 @@ async def update_existing_attempt(attempt_id: int, updated_attempt: AttemptCreat
         raise HTTPException(status_code=404, detail="Attempt not found")
 
 
-@router.delete("/attempts/{attempt_id}")
+@router.delete("/{attempt_id}")
 async def delete_existing_attempt(attempt_id: int):
     attempt = await get_attempt(attempt_id)
     if attempt:

@@ -6,53 +6,53 @@ from src.device.service import *
 router = APIRouter()
 
 
-@router.get("/devices/types", response_model=list[DeviceType])
+@router.get("/types", response_model=list[DeviceType])
 async def get_device_types(skip: int = 0, limit: int = 100):
     device_types = await read_device_types(skip=skip, limit=limit)
     return device_types
 
 
-@router.get("/devices/models", response_model=list[DeviceModel])
+@router.get("/models", response_model=list[DeviceModel])
 async def get_device_models(skip: int = 0, limit: int = 100):
     device_models = await read_device_models(skip=skip, limit=limit)
     return device_models
 
 
-@router.get("/devices/states", response_model=list[DeviceState])
+@router.get("/states", response_model=list[DeviceState])
 async def get_device_states(skip: int = 0, limit: int = 100):
     device_states = await read_device_states(skip=skip, limit=limit)
     return device_states
 
 
-@router.get("/devices/additional_states", response_model=list[DeviceAdditionalState])
+@router.get("/additional_states", response_model=list[DeviceAdditionalState])
 async def get_device_additional_states(skip: int = 0, limit: int = 100):
     device_additional_states = await read_device_additional_states(
         skip=skip, limit=limit)
     return device_additional_states
 
 
-@router.get("/devices/channels", response_model=list[DeviceAdditionalState])
+@router.get("/channels", response_model=list[DeviceAdditionalState])
 async def get_device_additional_states(skip: int = 0, limit: int = 100):
     device_channels = await read_device_channels(
         skip=skip, limit=limit)
     return device_channels
 
 
-@router.get("/devices_by_type", response_model=list[Device])
+@router.get("/by_type", response_model=list[Device])
 async def get_devices_by_type(type_name: str, skip: int = 0, limit: int = 100):
     devices_by_type = await read_devices_by_type(
         type_name, skip=skip, limit=limit)
     return devices_by_type
 
 
-@router.get("/devices_by_types", response_model=list[Device])
+@router.get("/by_types", response_model=list[Device])
 async def get_devices_by_types(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
     devices_by_types = await read_devices_by_types(
         type_names, skip=skip, limit=limit)
     return devices_by_types
 
 
-@router.get("/devices/{device_id}", response_model=DeviceRelated)
+@router.get("/{device_id}", response_model=DeviceRelated)
 async def get_device(device_id: int):
     device = await read_device(device_id)
     if device:
@@ -61,7 +61,7 @@ async def get_device(device_id: int):
         raise HTTPException(status_code=404, detail="Device not found")
 
 
-@router.post("/devices", response_model=Device)
+@router.post("/", response_model=Device)
 async def create_new_device(device: DeviceRelatedCreate):
     exist_device = await get_device_id(device.name)
     if exist_device:
@@ -71,7 +71,7 @@ async def create_new_device(device: DeviceRelatedCreate):
         return await create_device(device)
 
 
-@router.put("/devices/{device_id}", response_model=Device)
+@router.put("/{device_id}", response_model=Device)
 async def update_existing_device(device_id: int, updated_device: DeviceRelatedCreate):
     device = await get_device(device_id)
     if device:
@@ -80,7 +80,7 @@ async def update_existing_device(device_id: int, updated_device: DeviceRelatedCr
         raise HTTPException(status_code=404, detail="Device not found")
 
 
-@router.delete("/devices/{device_id}")
+@router.delete("/{device_id}")
 async def delete_existing_device(device_id: int):
     device = await get_device(device_id)
     if device:
@@ -90,7 +90,7 @@ async def delete_existing_device(device_id: int):
         raise HTTPException(status_code=404, detail="Device not found")
 
 
-@router.get("/devices_by_types_related", response_model=list[DeviceRelated])
+@router.get("/by_types_related", response_model=list[DeviceRelated])
 async def get_devices_by_types_related(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
     devices_by_types = await read_devices_by_types_related(
         type_names, skip=skip, limit=limit)

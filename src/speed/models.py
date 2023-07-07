@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 
-class Port(BaseModel):
+class Speed(BaseModel):
     id: int
-    name: str
+    value: int
 
     class Config:
         orm_mode = True
