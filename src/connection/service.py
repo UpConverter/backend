@@ -5,7 +5,7 @@ from src.connection import models
 from src.database import database
 
 
-async def get_connection(connection_id: int):
+async def read_connection(connection_id: int):
     select_query = select(schemas.Connection).where(
         schemas.Connection.id == connection_id
     )
@@ -25,7 +25,7 @@ async def create_connection(config_id: int, connection: models.ConnectionCreate)
         )
     )
     connection_id = await database.execute(insert_query)
-    return await get_connection(connection_id)
+    return await read_connection(connection_id)
 
 
 async def update_connection(connection_id: int, connection: models.ConnectionCreate):
@@ -39,7 +39,7 @@ async def update_connection(connection_id: int, connection: models.ConnectionCre
         )
     )
     await database.execute(update_query)
-    return await get_connection(connection_id)
+    return await read_connection(connection_id)
 
 
 async def delete_connection(connection_id: int):

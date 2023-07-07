@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from src.configuration.models import *
 from src.configuration.service import *
+from src.connection.service import create_connection
 
 router = APIRouter()
 
@@ -18,16 +19,16 @@ async def create_new_config(config: ConfigurationCreate):
 
 
 @router.put("/{config_id}")
-async def update_existing_configuration(config_id: int, connections: ConnectionsTyped):
-    await update_configuration(config_id, connections)
+async def update_existing_config(config_id: int, connections: ConnectionsTyped):
+    await update_config(config_id, connections)
     return {"message": "Connections updated successfully"}
 
 
 @router.delete("/{config_id}")
-async def delete_existing_configuration(config_id: int):
+async def delete_existing_config(config_id: int):
     config = await read_config(config_id)
     if config:
-        await delete_configuration(config_id)
+        await delete_config(config_id)
         return {"message": f"Config deleted successfully"}
     else:
         raise HTTPException(status_code=404, detail="Config not found")

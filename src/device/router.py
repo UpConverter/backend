@@ -52,9 +52,19 @@ async def get_devices_by_types(type_names: list[str] = Query(...), skip: int = 0
     return devices_by_types
 
 
+@router.get("/by_types_related", response_model=list[DeviceRelated])
+async def get_devices_by_types_related(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
+    devices_by_types = await read_devices_by_types_related(
+        type_names, skip=skip, limit=limit)
+    if devices_by_types:
+        return devices_by_types
+    else:
+        raise HTTPException(status_code=404, detail="Devices not found")
+
+
 @router.get("/{device_id}", response_model=DeviceRelated)
 async def get_device(device_id: int):
-    device = await read_device(device_id)
+    device = await read_device_related(device_id)
     if device:
         return device
     else:
@@ -63,7 +73,7 @@ async def get_device(device_id: int):
 
 @router.post("/", response_model=Device)
 async def create_new_device(device: DeviceRelatedCreate):
-    exist_device = await get_device_id(device.name)
+    exist_device = await read_device_id(device.name)
     if exist_device:
         raise HTTPException(
             status_code=404, detail=f"Device with name {device.name} already exist")
@@ -73,7 +83,7 @@ async def create_new_device(device: DeviceRelatedCreate):
 
 @router.put("/{device_id}", response_model=Device)
 async def update_existing_device(device_id: int, updated_device: DeviceRelatedCreate):
-    device = await get_device(device_id)
+    device = await read_device(device_id)
     if device:
         return await update_device(device_id, updated_device)
     else:
@@ -82,19 +92,9 @@ async def update_existing_device(device_id: int, updated_device: DeviceRelatedCr
 
 @router.delete("/{device_id}")
 async def delete_existing_device(device_id: int):
-    device = await get_device(device_id)
+    device = await read_device(device_id)
     if device:
         await delete_device(device_id)
         return {"message": f"Device deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Device not found")
-
-
-@router.get("/by_types_related", response_model=list[DeviceRelated])
-async def get_devices_by_types_related(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
-    devices_by_types = await read_devices_by_types_related(
-        type_names, skip=skip, limit=limit)
-    if devices_by_types:
-        return devices_by_types
     else:
         raise HTTPException(status_code=404, detail="Device not found")

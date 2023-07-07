@@ -12,7 +12,7 @@ async def read_device_types(skip: int = 0, limit: int = 100):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_type_id(type_name: str) -> int:
+async def read_device_type_id(type_name: str) -> int:
     query = select(schemas.DeviceType.id).where(
         schemas.DeviceType.name == type_name).limit(1)
     result = await database.fetch_one(query)
@@ -25,7 +25,7 @@ async def read_device_models(skip: int = 0, limit: int = 100):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_model_id(model_name: str) -> int:
+async def read_device_model_id(model_name: str) -> int:
     query = select(schemas.DeviceModel.id).where(
         schemas.DeviceModel.name == model_name).limit(1)
     result = await database.fetch_one(query)
@@ -38,7 +38,7 @@ async def read_device_states(skip: int = 0, limit: int = 100):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_state_id(state_name: str) -> int:
+async def read_device_state_id(state_name: str) -> int:
     query = select(schemas.DeviceState.id).where(
         schemas.DeviceState.name == state_name).limit(1)
     result = await database.fetch_one(query)
@@ -52,7 +52,7 @@ async def read_device_additional_states(skip: int = 0, limit: int = 100):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_additional_state_id(additional_state_name: str) -> int:
+async def read_device_additional_state_id(additional_state_name: str) -> int:
     query = select(schemas.DeviceAdditionalState.id).where(
         schemas.DeviceAdditionalState.name == additional_state_name).limit(1)
     result = await database.fetch_one(query)
@@ -65,14 +65,14 @@ async def read_device_channels(skip: int = 0, limit: int = 100):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_channel_id(channel_name: str) -> int:
+async def read_device_channel_id(channel_name: str) -> int:
     query = select(schemas.Channel.id).where(
         schemas.Channel.name == channel_name).limit(1)
     result = await database.fetch_one(query)
     return result.id if result else None
 
 
-async def get_device(device_id: int):
+async def read_device(device_id: int):
     select_query = (
         select(schemas.Device)
         .filter(
@@ -83,7 +83,7 @@ async def get_device(device_id: int):
 
 
 # TODO: Добавить обработку ошибки
-async def get_device_id(device_name: str) -> int:
+async def read_device_id(device_name: str) -> int:
     query = select(schemas.Device.id).where(
         schemas.Device.name == device_name).limit(1)
     result = await database.fetch_one(query)
@@ -92,10 +92,10 @@ async def get_device_id(device_name: str) -> int:
 
 async def create_device(device: models.DeviceRelatedCreate):
     serial_number = await gen_unique_serial_number()
-    type_id = await get_device_type_id(device.type_name)
-    model_id = await get_device_model_id(device.model_name)
-    state_id = await get_device_state_id(device.state_name)
-    additional_state_id = await get_device_additional_state_id(device.additional_state_name)
+    type_id = await read_device_type_id(device.type_name)
+    model_id = await read_device_model_id(device.model_name)
+    state_id = await read_device_state_id(device.state_name)
+    additional_state_id = await read_device_additional_state_id(device.additional_state_name)
 
     insert_query = (
         insert(schemas.Device)
@@ -120,19 +120,19 @@ async def update_device(device_id: int, device: models.DeviceRelatedCreate):
     }
 
     if device.type_name:
-        type_id = await get_device_type_id(device.type_name)
+        type_id = await read_device_type_id(device.type_name)
         update_values["type_id"] = type_id
 
     if device.model_name:
-        model_id = await get_device_model_id(device.model_name)
+        model_id = await read_device_model_id(device.model_name)
         update_values["model_id"] = model_id
 
     if device.state_name:
-        state_id = await get_device_state_id(device.state_name)
+        state_id = await read_device_state_id(device.state_name)
         update_values["state_id"] = state_id
 
     if device.additional_state_name:
-        additional_state_id = await get_device_additional_state_id(device.additional_state_name)
+        additional_state_id = await read_device_additional_state_id(device.additional_state_name)
         update_values["additional_state_id"] = additional_state_id
 
     update_query = (
@@ -169,7 +169,7 @@ async def read_devices_by_types(type_names: list[str], skip: int = 0, limit: int
     return devices_by_types
 
 
-async def read_device(device_id: int):
+async def read_device_related(device_id: int):
     select_query = (
         select(
             schemas.Device,

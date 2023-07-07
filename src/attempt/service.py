@@ -15,38 +15,10 @@ async def read_attempts(skip: int = 0, limit: int = 100):
     return await database.fetch_all(select_query)
 
 
-async def get_attempt(attempt_id: int):
+async def read_attempt(attempt_id: int):
     select_query = select(schemas.Attempt).where(
         schemas.Attempt.id == attempt_id)
     return await database.fetch_one(select_query)
-
-
-async def read_last_success_attempt():
-    # Create a subquery to retrieve the maximum timestamp of successful attempts
-    subquery = (
-        select(func.max(schemas.Attempt.timestamp))
-        .where(schemas.Attempt.success)
-        .scalar_subquery()
-    )
-
-    # Build the main query to fetch the last attempt with success=True
-    select_query = (
-        select(
-            schemas.Attempt,
-            schemas.Configuration.name.label("config_name")
-        )
-        .where(
-            and_(
-                schemas.Attempt.timestamp == subquery,
-                schemas.Attempt.success,
-            )
-        )
-        .join(schemas.Configuration, schemas.Attempt.configuration_id == schemas.Configuration.id)
-    )
-
-    result = await database.fetch_one(select_query)
-
-    return result
 
 
 async def create_attempt(attempt: models.AttemptCreate):
@@ -88,7 +60,7 @@ async def update_attempt(attempt_id: int, attempt: models.AttemptCreate):
         )
     )
     await database.execute(update_query)
-    return await get_attempt(attempt_id)
+    return await read_attempt(attempt_id)
 
 
 async def delete_attempt(attempt_id: int):
@@ -98,3 +70,31 @@ async def delete_attempt(attempt_id: int):
     )
 
     return await database.execute(delete_query)
+
+
+async def read_last_success_attempt():
+    # Create a subquery to retrieve the maximum timestamp of successful attempts
+    subquery = (
+        select(func.max(schemas.Attempt.timestamp))
+        .where(schemas.Attempt.success)
+        .scalar_subquery()
+    )
+
+    # Build the main query to fetch the last attempt with success=True
+    select_query = (
+        select(
+            schemas.Attempt,
+            schemas.Configuration.name.label("config_name")
+        )
+        .where(
+            and_(
+                schemas.Attempt.timestamp == subquery,
+                schemas.Attempt.success,
+            )
+        )
+        .join(schemas.Configuration, schemas.Attempt.configuration_id == schemas.Configuration.id)
+    )
+
+    result = await database.fetch_one(select_query)
+
+    return result

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from src.attempt.models import Attempt, AttemptCreate, AttemptFull
-from src.attempt.service import (create_attempt, delete_attempt, get_attempt,
+from src.attempt.service import (create_attempt, delete_attempt, read_attempt,
                                  read_attempts, read_last_success_attempt,
                                  update_attempt)
 from src.configuration.service import read_config_connections
@@ -45,7 +45,7 @@ async def create_new_attempt(attempt: AttemptCreate):
 
 @router.put("/{attempt_id}", response_model=Attempt)
 async def update_existing_attempt(attempt_id: int, updated_attempt: AttemptCreate):
-    attempt = await get_attempt(attempt_id)
+    attempt = await read_attempt(attempt_id)
     if attempt:
         return await update_attempt(attempt_id, updated_attempt)
     else:
@@ -54,7 +54,7 @@ async def update_existing_attempt(attempt_id: int, updated_attempt: AttemptCreat
 
 @router.delete("/{attempt_id}")
 async def delete_existing_attempt(attempt_id: int):
-    attempt = await get_attempt(attempt_id)
+    attempt = await read_attempt(attempt_id)
     if attempt:
         await delete_attempt(attempt_id)
         return {"message": f"Attempt deleted successfully"}

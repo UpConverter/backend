@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.put("/connections/{connection_id}", response_model=Connection)
 async def update_existing_connection(connection_id: int, updated_connection: ConnectionCreate):
-    connection = await get_connection(connection_id)
+    connection = await read_connection(connection_id)
     if connection:
         return await update_connection(connection_id, updated_connection)
     else:
@@ -17,7 +17,7 @@ async def update_existing_connection(connection_id: int, updated_connection: Con
 
 @router.delete("/connections/{connection_id}")
 async def delete_existing_connection(connection_id: int):
-    connection = await get_connection(connection_id)
+    connection = await read_connection(connection_id)
     if connection:
         await delete_connection(connection_id)
         return {"message": f"Connection deleted successfully"}
