@@ -49,10 +49,10 @@ if settings.ENVIRONMENT.is_deployed:
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
 
+
 app.include_router(port_router, prefix="/ports", tags=["ports"])
 app.include_router(speed_router, prefix="/speeds", tags=["speeds"])
 app.include_router(device_router, prefix="/devices", tags=["devices"])
-app.include_router(connection_router, prefix="/connections",
-                   tags=["connections"])
+app.include_router(connection_router, prefix="/connections", tags=["connections"])
 app.include_router(config_router, prefix="/configs", tags=["configs"])
 app.include_router(attempt_router, prefix="/attempts", tags=["attempts"])

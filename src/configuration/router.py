@@ -46,12 +46,11 @@ async def get_config(config_id: int):
 @router.get("/{config_id}/connections", response_model=ConnectionsTyped)
 async def get_config_connections(config_id: int):
     config_cals = await read_config_connections(config_id, device_type_name="CAL")
-    config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
+    config_upconv = await read_config_connections(
+        config_id, device_type_name="UPCONVERTER"
+    )
     if config_cals or config_upconv:
-        return {
-            "config_cals": config_cals,
-            "config_upconv": config_upconv
-        }
+        return {"config_cals": config_cals, "config_upconv": config_upconv}
     else:
         raise HTTPException(status_code=404, detail="Config not found")
 
@@ -76,7 +75,9 @@ async def get_config_cals(config_id: int):
 
 @router.get("/{config_id}/upconverters", response_model=list[Connections])
 async def get_config_upconv(config_id: int):
-    config_upconv = await read_config_connections(config_id, device_type_name="UPCONVERTER")
+    config_upconv = await read_config_connections(
+        config_id, device_type_name="UPCONVERTER"
+    )
     if config_upconv:
         return config_upconv
     else:

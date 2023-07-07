@@ -27,35 +27,38 @@ async def get_device_states(skip: int = 0, limit: int = 100):
 @router.get("/additional_states", response_model=list[DeviceAdditionalState])
 async def get_device_additional_states(skip: int = 0, limit: int = 100):
     device_additional_states = await read_device_additional_states(
-        skip=skip, limit=limit)
+        skip=skip, limit=limit
+    )
     return device_additional_states
 
 
 @router.get("/channels", response_model=list[DeviceAdditionalState])
 async def get_device_additional_states(skip: int = 0, limit: int = 100):
-    device_channels = await read_device_channels(
-        skip=skip, limit=limit)
+    device_channels = await read_device_channels(skip=skip, limit=limit)
     return device_channels
 
 
 @router.get("/by_type", response_model=list[Device])
 async def get_devices_by_type(type_name: str, skip: int = 0, limit: int = 100):
-    devices_by_type = await read_devices_by_type(
-        type_name, skip=skip, limit=limit)
+    devices_by_type = await read_devices_by_type(type_name, skip=skip, limit=limit)
     return devices_by_type
 
 
 @router.get("/by_types", response_model=list[Device])
-async def get_devices_by_types(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
-    devices_by_types = await read_devices_by_types(
-        type_names, skip=skip, limit=limit)
+async def get_devices_by_types(
+    type_names: list[str] = Query(...), skip: int = 0, limit: int = 100
+):
+    devices_by_types = await read_devices_by_types(type_names, skip=skip, limit=limit)
     return devices_by_types
 
 
 @router.get("/by_types_related", response_model=list[DeviceRelated])
-async def get_devices_by_types_related(type_names: list[str] = Query(...), skip: int = 0, limit: int = 100):
+async def get_devices_by_types_related(
+    type_names: list[str] = Query(...), skip: int = 0, limit: int = 100
+):
     devices_by_types = await read_devices_by_types_related(
-        type_names, skip=skip, limit=limit)
+        type_names, skip=skip, limit=limit
+    )
     if devices_by_types:
         return devices_by_types
     else:
@@ -76,7 +79,8 @@ async def create_new_device(device: DeviceRelatedCreate):
     exist_device = await read_device_id(device.name)
     if exist_device:
         raise HTTPException(
-            status_code=404, detail=f"Device with name {device.name} already exist")
+            status_code=404, detail=f"Device with name {device.name} already exist"
+        )
     else:
         return await create_device(device)
 

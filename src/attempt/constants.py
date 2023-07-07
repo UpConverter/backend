@@ -1,1 +1,1 @@
-MAIN_CAL="SA"
+MAIN_CAL = "SA"

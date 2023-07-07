@@ -63,8 +63,7 @@ class Device(Base):
     type_id = Column(Integer, ForeignKey("device_type.id"))
     model_id = Column(Integer, ForeignKey("device_model.id"))
     state_id = Column(Integer, ForeignKey("device_state.id"))
-    additional_state_id = Column(
-        Integer, ForeignKey("device_additional_state.id"))
+    additional_state_id = Column(Integer, ForeignKey("device_additional_state.id"))
 
     type_ = relationship("DeviceType", backref="devices")
     model = relationship("DeviceModel", backref="devices")
@@ -82,12 +81,15 @@ class Connection(Base):
     connected_to_device_channel_id = Column(Integer, ForeignKey("channel.id"))
 
     configuration = relationship("Configuration", backref="connections")
-    device = relationship("Device", foreign_keys=[
-                          device_id], backref="connections_as_device")
-    connected_to_device = relationship("Device", foreign_keys=[
-                                       connected_to_device_id], backref="connections_as_connected_to_device")
-    connected_to_device_channel = relationship(
-        "Channel", backref="connections")
+    device = relationship(
+        "Device", foreign_keys=[device_id], backref="connections_as_device"
+    )
+    connected_to_device = relationship(
+        "Device",
+        foreign_keys=[connected_to_device_id],
+        backref="connections_as_connected_to_device",
+    )
+    connected_to_device_channel = relationship("Channel", backref="connections")
 
 
 class Configuration(Base):

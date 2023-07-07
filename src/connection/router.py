@@ -7,7 +7,9 @@ router = APIRouter()
 
 
 @router.put("/connections/{connection_id}", response_model=Connection)
-async def update_existing_connection(connection_id: int, updated_connection: ConnectionCreate):
+async def update_existing_connection(
+    connection_id: int, updated_connection: ConnectionCreate
+):
     connection = await read_connection(connection_id)
     if connection:
         return await update_connection(connection_id, updated_connection)

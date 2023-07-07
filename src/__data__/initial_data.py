@@ -3,21 +3,13 @@ import asyncio
 from src.__data__.fill_database import fill_database
 
 data = {
-    "DeviceType": [
-        {"name": "SA"},
-        {"name": "CAL"},
-        {"name": "UPCONVERTER"}
-    ],
+    "DeviceType": [{"name": "SA"}, {"name": "CAL"}, {"name": "UPCONVERTER"}],
     "DeviceModel": [
         {"name": "COAXIAL"},
         {"name": "SOLID STATE"},
         {"name": "SMD"},
     ],
-    "DeviceState": [
-        {"name": "CRYO"},
-        {"name": "CAL"},
-        {"name": "TERMINATE"}
-    ],
+    "DeviceState": [{"name": "CRYO"}, {"name": "CAL"}, {"name": "TERMINATE"}],
     "DeviceAdditionalState": [
         {"name": "LO_FULL"},
         {"name": "LO_SPLIT"},
@@ -34,7 +26,7 @@ data = {
         {"value": 57600},
         {"value": 256000},
         {"value": 115200},
-        {"value": 921600}
+        {"value": 921600},
     ],
     "Port": [
         {"name": "COM1"},
@@ -49,6 +41,7 @@ data = {
 
 async def main():
     await fill_database(data)
+
 
 # Запуск сопрограммы
 asyncio.run(main())

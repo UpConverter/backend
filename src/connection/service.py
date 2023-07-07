@@ -13,16 +13,13 @@ async def read_connection(connection_id: int):
 
 
 async def create_connection(config_id: int, connection: models.ConnectionCreate):
-    insert_query = (
-        insert(schemas.Connection)
-        .values(
-            {
-                "configuration_id": config_id,
-                "device_id": connection.device_id,
-                "connected_to_device_id": connection.connected_to_device_id,
-                "connected_to_device_channel_id": connection.connected_to_device_channel_id
-            }
-        )
+    insert_query = insert(schemas.Connection).values(
+        {
+            "configuration_id": config_id,
+            "device_id": connection.device_id,
+            "connected_to_device_id": connection.connected_to_device_id,
+            "connected_to_device_channel_id": connection.connected_to_device_channel_id,
+        }
     )
     connection_id = await database.execute(insert_query)
     return await read_connection(connection_id)
@@ -43,9 +40,8 @@ async def update_connection(connection_id: int, connection: models.ConnectionCre
 
 
 async def delete_connection(connection_id: int):
-    delete_query = (
-        delete(schemas.Connection)
-        .where(schemas.Connection.id == connection_id)
+    delete_query = delete(schemas.Connection).where(
+        schemas.Connection.id == connection_id
     )
 
     return await database.execute(delete_query)
