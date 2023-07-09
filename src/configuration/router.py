@@ -51,7 +51,7 @@ async def get_config_connections(config_id: int):
         config_upconv = await read_config_connections(
             config_id, device_type_name="UPCONVERTER"
         )
-        return {"config_cals":  config_cals, "config_upconv": config_upconv}
+        return {"config_cals": config_cals, "config_upconv": config_upconv}
     else:
         raise HTTPException(status_code=404, detail="Config not found")
 

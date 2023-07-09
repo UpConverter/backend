@@ -21,7 +21,7 @@ CORS_ORIGINS=["http://localhost:3000"]
 ```
 ### Linter
 ```
-    docker compose exec app format
+    docker compose exec upconverter_backend format
 ```
 ## Настройка под Linux Ubuntu
 ### При необходимости создайте виртуальное окружение в Python

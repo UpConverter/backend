@@ -1,15 +1,22 @@
 from fastapi import APIRouter, HTTPException
 
-from src.attempt.models import Attempt, AttemptCreate, AttemptRelated
+from src.attempt.models import (
+    Attempt,
+    AttemptCreate,
+    AttemptRelated,
+    AttemptRelatedCreate,
+)
 from src.attempt.service import (
     create_attempt,
     delete_attempt,
     read_attempt,
     read_attempts,
+    read_last_attempt,
     read_last_success_attempt,
     update_attempt,
 )
-from src.configuration.service import read_config_connections
+from src.port.service import read_port_id
+from src.speed.service import read_speed_id
 
 router = APIRouter()
 
@@ -18,6 +25,16 @@ router = APIRouter()
 async def get_attempts(skip: int = 0, limit: int = 100):
     attempts = await read_attempts(skip=skip, limit=limit)
     return attempts
+
+
+@router.get("/last", response_model=AttemptRelated)
+async def get_last_attempt():
+    attempt = await read_last_attempt()
+
+    if attempt:
+        return attempt
+    else:
+        raise HTTPException(status_code=404, detail="No attempts found")
 
 
 @router.get("/last_success", response_model=AttemptRelated)
@@ -37,8 +54,23 @@ async def get_last_success_attempt():
 # после чего запоминая состояние приборов в текущий момент
 # после чего пытаться переключить в новое положение считывая из конфигурации
 @router.post("/", response_model=Attempt)
-async def create_new_attempt(attempt: AttemptCreate):
-    return await create_attempt(attempt)
+async def create_new_attempt(attempt: AttemptRelatedCreate):
+    speed_id = await read_speed_id(attempt.speed)
+    port_id = await read_port_id(attempt.port)
+    if not speed_id:
+        raise HTTPException(status_code=404, detail="Speed not found")
+    if not port_id:
+        raise HTTPException(status_code=404, detail="Port not found")
+
+    attempt = await create_attempt(
+        AttemptCreate(
+            configuration_id=attempt.configuration_id,
+            speed_id=speed_id,
+            port_id=port_id,
+        )
+    )
+
+    return attempt
 
 
 @router.put("/{attempt_id}", response_model=Attempt)

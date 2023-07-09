@@ -42,6 +42,7 @@ class DeviceChannel(BaseModel):
     class Config:
         orm_mode = True
 
+
 class DeviceBase(BaseModel):
     name: str
 

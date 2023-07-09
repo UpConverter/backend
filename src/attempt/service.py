@@ -20,7 +20,7 @@ async def read_attempt(attempt_id: int):
     return await database.fetch_one(select_query)
 
 
-async def create_attempt(attempt: models.AttemptCreate):
+async def create_attempt(attempt: models.AttemptCreate) -> models.Attempt:
     config_cals = await read_config_connections(
         attempt.configuration_id, device_type_name="CAL"
     )
@@ -67,6 +67,39 @@ async def delete_attempt(attempt_id: int):
     return await database.execute(delete_query)
 
 
+async def read_last_attempt():
+    subquery = select(func.max(schemas.Attempt.timestamp)).scalar_subquery()
+
+    select_query = (
+        select(
+            schemas.Attempt.success,
+            schemas.Configuration.id.label("configuration_id"),
+            schemas.Configuration.name.label("configuration"),
+            schemas.Speed.value.label("speed"),
+            schemas.Port.name.label("port"),
+        )
+        .where(
+            schemas.Attempt.timestamp == subquery,
+        )
+        .join(
+            schemas.Configuration,
+            schemas.Attempt.configuration_id == schemas.Configuration.id,
+        )
+        .join(
+            schemas.Speed,
+            schemas.Attempt.speed_id == schemas.Speed.id,
+        )
+        .join(
+            schemas.Port,
+            schemas.Attempt.port_id == schemas.Port.id,
+        )
+    )
+
+    result = await database.fetch_one(select_query)
+
+    return result
+
+
 async def read_last_success_attempt():
     # Create a subquery to retrieve the maximum timestamp of successful attempts
     subquery = (
@@ -77,12 +110,13 @@ async def read_last_success_attempt():
 
     # Build the main query to fetch the last attempt with success=True
     select_query = (
-        select(schemas.Attempt.success, 
-               schemas.Configuration.id.label("configuration_id"),
-               schemas.Configuration.name.label("configuration"),
-               schemas.Speed.value.label("speed"),
-               schemas.Port.name.label("port"),
-               )
+        select(
+            schemas.Attempt.success,
+            schemas.Configuration.id.label("configuration_id"),
+            schemas.Configuration.name.label("configuration"),
+            schemas.Speed.value.label("speed"),
+            schemas.Port.name.label("port"),
+        )
         .where(
             and_(
                 schemas.Attempt.timestamp == subquery,

@@ -2,8 +2,6 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from src.connection.models import ConnectionsTyped
-
 
 class AttemptBase(BaseModel):
     configuration_id: int
@@ -24,10 +22,12 @@ class Attempt(AttemptBase):
         orm_mode = True
 
 
-class AttemptRelated(BaseModel):
+class AttemptRelatedCreate(BaseModel):
     configuration_id: int
-    configuration: str
     speed: int
     port: str
-    success: bool
 
+
+class AttemptRelated(AttemptRelatedCreate):
+    configuration: str
+    success: bool
