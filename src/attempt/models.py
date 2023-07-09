@@ -24,9 +24,10 @@ class Attempt(AttemptBase):
         orm_mode = True
 
 
-class AttemptName(AttemptBase):
-    config_name: str
+class AttemptRelated(BaseModel):
+    configuration_id: int
+    configuration: str
+    speed: int
+    port: str
+    success: bool
 
-
-class AttemptFull(ConnectionsTyped):
-    attempt: AttemptName

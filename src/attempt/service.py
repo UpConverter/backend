@@ -77,7 +77,12 @@ async def read_last_success_attempt():
 
     # Build the main query to fetch the last attempt with success=True
     select_query = (
-        select(schemas.Attempt, schemas.Configuration.name.label("config_name"))
+        select(schemas.Attempt.success, 
+               schemas.Configuration.id.label("configuration_id"),
+               schemas.Configuration.name.label("configuration"),
+               schemas.Speed.value.label("speed"),
+               schemas.Port.name.label("port"),
+               )
         .where(
             and_(
                 schemas.Attempt.timestamp == subquery,
@@ -87,6 +92,14 @@ async def read_last_success_attempt():
         .join(
             schemas.Configuration,
             schemas.Attempt.configuration_id == schemas.Configuration.id,
+        )
+        .join(
+            schemas.Speed,
+            schemas.Attempt.speed_id == schemas.Speed.id,
+        )
+        .join(
+            schemas.Port,
+            schemas.Attempt.port_id == schemas.Port.id,
         )
     )
 

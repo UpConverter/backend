@@ -32,8 +32,8 @@ async def get_device_additional_states(skip: int = 0, limit: int = 100):
     return device_additional_states
 
 
-@router.get("/channels", response_model=list[DeviceAdditionalState])
-async def get_device_additional_states(skip: int = 0, limit: int = 100):
+@router.get("/channels", response_model=list[DeviceChannel])
+async def get_device_channels(skip: int = 0, limit: int = 100):
     device_channels = await read_device_channels(skip=skip, limit=limit)
     return device_channels
 

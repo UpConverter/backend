@@ -35,6 +35,13 @@ class DeviceAdditionalState(BaseModel):
         orm_mode = True
 
 
+class DeviceChannel(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
 class DeviceBase(BaseModel):
     name: str
 
