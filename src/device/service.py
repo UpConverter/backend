@@ -93,7 +93,7 @@ async def read_device(device_id: int):
 async def read_device_id(device_name: str) -> int:
     query = select(schemas.Device.id).where(schemas.Device.name == device_name).limit(1)
     result = await database.fetch_one(query)
-    return result.device_id if result else None
+    return result.id if result else None
 
 
 async def create_device(device: models.DeviceRelatedCreate):

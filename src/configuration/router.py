@@ -1,7 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
-from src.configuration.models import *
+from src.configuration.models import Configuration, ConfigurationCreate
 from src.configuration.service import *
+from src.connection.models import (
+    Connection,
+    ConnectionCreate,
+    Connections,
+    ConnectionsTyped,
+)
 from src.connection.service import create_connection
 
 router = APIRouter()

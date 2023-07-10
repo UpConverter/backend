@@ -2,7 +2,8 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import aliased
 
 from src import schemas
-from src.configuration import models
+from src.configuration.models import ConfigurationCreate
+from src.connection.models import Connections, ConnectionsTyped
 from src.database import database
 from src.device.service import read_device_channel_id, read_device_id
 
@@ -19,7 +20,7 @@ async def read_config(config_id: int):
     return await database.fetch_one(select_query)
 
 
-async def create_config(config: models.ConfigurationCreate):
+async def create_config(config: ConfigurationCreate):
     insert_query = insert(schemas.Configuration).values(
         {
             "name": config.name,
@@ -35,7 +36,7 @@ async def create_config(config: models.ConfigurationCreate):
 
 
 # TODO: Добавить метод изменения имени конфигурации
-async def update_config(config_id: int, connections: models.ConnectionsTyped):
+async def update_config(config_id: int, connections: ConnectionsTyped):
     async with database.transaction():
         await update_config_connections(config_id, connections)
 
@@ -57,21 +58,18 @@ async def delete_config(config_id: int):
 
 async def read_config_connections(
     config_id: int, device_type_name: str = None
-) -> models.Connections:
+) -> Connections:
     main_device = aliased(schemas.Device)
     connected_device = aliased(schemas.Device)
 
     select_query = (
         select(
             schemas.Connection.id,
-            schemas.Connection.device_id,
-            main_device.name.label("device_name"),
+            main_device.name.label("device"),
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
             schemas.DeviceState.name.label("state_name"),
-            schemas.Connection.connected_to_device_id,
             connected_device.name.label("connected_to_device"),
-            schemas.Connection.connected_to_device_channel_id,
             schemas.Channel.name.label("connected_to_device_channel"),
         )
         .select_from(schemas.Connection)
@@ -98,9 +96,7 @@ async def read_config_connections(
     return result
 
 
-async def update_config_connections(
-    config_id: int, connections: models.ConnectionsTyped
-):
+async def update_config_connections(config_id: int, connections: ConnectionsTyped):
     # Обновление Connections для config_cals
     for connection in connections.config_cals:
         await update_config_connection(config_id, connection)
@@ -111,7 +107,7 @@ async def update_config_connections(
 
 
 # TODO: Добавить изменение сущности устройства
-async def update_config_connection(config_id: int, connection: models.Connections):
+async def update_config_connection(config_id: int, connection: Connections):
     connection.device_id = await read_device_id(connection.device_name)
     connection.connected_to_device_id = await read_device_id(
         connection.connected_to_device

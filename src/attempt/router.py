@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException
 
 from src.attempt.models import (
     Attempt,
+    AttemptConnections,
     AttemptCreate,
-    AttemptRelated,
     AttemptRelatedCreate,
 )
 from src.attempt.service import (
@@ -15,6 +15,7 @@ from src.attempt.service import (
     read_last_success_attempt,
     update_attempt,
 )
+from src.configuration.service import read_config_connections
 from src.port.service import read_port_id
 from src.speed.service import read_speed_id
 
@@ -27,22 +28,42 @@ async def get_attempts(skip: int = 0, limit: int = 100):
     return attempts
 
 
-@router.get("/last", response_model=AttemptRelated)
+@router.get("/last", response_model=AttemptConnections)
 async def get_last_attempt():
     attempt = await read_last_attempt()
 
     if attempt:
-        return attempt
+        config_cals = await read_config_connections(
+            attempt.configuration_id, device_type_name="CAL"
+        )
+        config_upconv = await read_config_connections(
+            attempt.configuration_id, device_type_name="UPCONVERTER"
+        )
+        return {
+            "attempt": attempt,
+            "config_cals": config_cals,
+            "config_upconv": config_upconv,
+        }
     else:
         raise HTTPException(status_code=404, detail="No attempts found")
 
 
-@router.get("/last_success", response_model=AttemptRelated)
+@router.get("/last_success", response_model=AttemptConnections)
 async def get_last_success_attempt():
     attempt = await read_last_success_attempt()
 
     if attempt:
-        return attempt
+        config_cals = await read_config_connections(
+            attempt.configuration_id, device_type_name="CAL"
+        )
+        config_upconv = await read_config_connections(
+            attempt.configuration_id, device_type_name="UPCONVERTER"
+        )
+        return {
+            "attempt": attempt,
+            "config_cals": config_cals,
+            "config_upconv": config_upconv,
+        }
     else:
         raise HTTPException(status_code=404, detail="No successful attempts found")
 

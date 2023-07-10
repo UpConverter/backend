@@ -18,7 +18,8 @@ COPY . /src
 ENV PATH "$PATH:/src/scripts"
 
 RUN useradd -m -d /src -s /bin/bash app \
-    && chown -R app:app /src/* && chmod +x /src/scripts/*
+    && chown -R app:app /src/* && chmod +x /src/scripts/* \
+    && usermod -a -G dialout app
 
 
 WORKDIR /src
