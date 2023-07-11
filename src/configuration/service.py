@@ -5,6 +5,7 @@ from src import schemas
 from src.configuration.models import ConfigurationCreate
 from src.connection.models import Connections, ConnectionsTyped
 from src.database import database
+from src.device.models import DeviceRelated
 from src.device.service import read_device_channel_id, read_device_id
 
 
@@ -94,6 +95,35 @@ async def read_config_connections(
     result = await database.fetch_all(select_query)
 
     return result
+
+
+async def read_config_avaliable_devices(
+    config_id: int, type_name: str
+) -> list[DeviceRelated]:
+    # Получение идентификаторов устройств из таблицы connections для указанной конфигурации
+    connection_devices = select([schemas.Connection.device_id]).where(
+        schemas.Connection.configuration_id == config_id
+    )
+
+    # Получение всех устройств заданного типа, исключая устройства из таблицы connections
+    select_query = (
+        select(
+            schemas.Device,
+            schemas.DeviceType.name.label("type_name"),
+            schemas.DeviceModel.name.label("model_name"),
+            schemas.DeviceState.name.label("state_name"),
+            schemas.DeviceAdditionalState.name.label("additional_state_name"),
+        )
+        .join(schemas.Device.type_)
+        .outerjoin(schemas.Device.state)
+        .outerjoin(schemas.DeviceModel)
+        .outerjoin(schemas.Device.additional_state)
+        .filter(schemas.DeviceType.name == type_name)
+        .filter(~schemas.Device.id.in_(connection_devices))
+    )
+
+    devices = await database.fetch_all(select_query)
+    return devices
 
 
 async def update_config_connections(config_id: int, connections: ConnectionsTyped):

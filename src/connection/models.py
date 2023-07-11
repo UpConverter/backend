@@ -5,16 +5,16 @@ from pydantic import BaseModel
 
 class ConnectionCreate(BaseModel):
     device_id: int
+
+
+class ConnectionUpdate(ConnectionCreate):
     connected_to_device_id: Optional[int]
     connected_to_device_channel_id: Optional[int]
 
 
-class Connection(ConnectionCreate):
+class Connection(ConnectionUpdate):
     id: int
     configuration_id: int
-    device_id: int
-    connected_to_device_id: Optional[int]
-    connected_to_device_channel_id: int
 
 
 class ConnectionRelatedCreate(BaseModel):

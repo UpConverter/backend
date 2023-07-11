@@ -9,6 +9,7 @@ from src.connection.models import (
     ConnectionsTyped,
 )
 from src.connection.service import create_connection
+from src.device.models import DeviceRelated
 
 router = APIRouter()
 
@@ -87,5 +88,15 @@ async def get_config_upconv(config_id: int):
     )
     if config_upconv:
         return config_upconv
+    else:
+        raise HTTPException(status_code=404, detail="Config not found")
+
+
+@router.get("/{config_id}/avaliable_devices", response_model=list[DeviceRelated])
+async def get_config_avaliable_devices(config_id: int, type_name: str):
+    config = await read_config(config_id)
+    if config:
+        devices = await read_config_avaliable_devices(config_id, type_name)
+        return devices
     else:
         raise HTTPException(status_code=404, detail="Config not found")

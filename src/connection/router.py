@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from src.connection.models import Connection, ConnectionCreate, ConnectionRelatedCreate
+from src.connection.models import Connection, ConnectionRelatedCreate, ConnectionUpdate
 from src.connection.service import delete_connection, read_connection, update_connection
 from src.device.service import read_device_channel_id, read_device_id
 
@@ -22,7 +22,7 @@ async def update_existing_connection(
         )
         return await update_connection(
             connection_id,
-            ConnectionCreate(
+            ConnectionUpdate(
                 device_id=device_id,
                 connected_to_device_id=connected_to_device_id,
                 connected_to_device_channel_id=channel_id,

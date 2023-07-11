@@ -3,6 +3,7 @@ from sqlalchemy import delete, insert, select, update
 from src import schemas
 from src.database import database
 from src.device import models
+from src.device.models import Device, DeviceChannel
 from src.device.utils import gen_unique_serial_number
 
 
@@ -75,6 +76,11 @@ async def read_device_channels(skip: int = 0, limit: int = 100):
     return await database.fetch_all(select_query)
 
 
+async def read_device_main_channel() -> DeviceChannel:
+    select_query = select(schemas.Channel)
+    return await database.fetch_one(select_query)
+
+
 # TODO: Добавить обработку ошибки
 async def read_device_channel_id(channel_name: str) -> int:
     query = (
@@ -82,6 +88,16 @@ async def read_device_channel_id(channel_name: str) -> int:
     )
     result = await database.fetch_one(query)
     return result.id if result else None
+
+
+async def read_main_device(type_name="SA") -> Device:
+    select_query = (
+        select(schemas.Device)
+        .join(schemas.DeviceType)
+        .filter(schemas.DeviceType.name == type_name)
+    )
+    device = await database.fetch_one(select_query)
+    return device
 
 
 async def read_device(device_id: int):
