@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from src.configuration.models import Configuration, ConfigurationCreate
 from src.configuration.service import *
+from src.configuration.utils import gen_unique_config_name
 from src.connection.models import (
     Connection,
     ConnectionCreate,
@@ -20,15 +21,25 @@ async def get_configs():
     return configs
 
 
+@router.post("/new", response_model=Configuration)
+async def create_new_config():
+    config_name = await gen_unique_config_name()
+    return await create_config(ConfigurationCreate(name=config_name))
+
+
 @router.post("/", response_model=Configuration)
 async def create_new_config(config: ConfigurationCreate):
     return await create_config(config)
 
 
 @router.put("/{config_id}")
-async def update_existing_config(config_id: int, connections: ConnectionsTyped):
-    await update_config(config_id, connections)
-    return {"message": "Connections updated successfully"}
+async def update_existing_config(config_id: int, configuration: ConfigurationCreate):
+    config = await read_config(config_id)
+    if config:
+        await update_config(config_id, configuration)
+        return {"message": "Configuration updated successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Config not found")
 
 
 @router.delete("/{config_id}")
@@ -68,6 +79,18 @@ async def create_new_connection(config_id: int, connection: ConnectionCreate):
     config = await read_config(config_id)
     if config:
         return await create_connection(config_id, connection)
+    else:
+        raise HTTPException(status_code=404, detail="Config not found")
+
+
+@router.put("/{config_id}/connections")
+async def update_existing_config_connections(
+    config_id: int, connections: ConnectionsTyped
+):
+    config = await read_config(config_id)
+    if config:
+        await update_config_connections(config_id, connections)
+        return {"message": "Connections updated successfully"}
     else:
         raise HTTPException(status_code=404, detail="Config not found")
 

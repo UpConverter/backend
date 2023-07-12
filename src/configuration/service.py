@@ -36,10 +36,17 @@ async def create_config(config: ConfigurationCreate):
     return await database.fetch_one(select_query)
 
 
-# TODO: Добавить метод изменения имени конфигурации
-async def update_config(config_id: int, connections: ConnectionsTyped):
-    async with database.transaction():
-        await update_config_connections(config_id, connections)
+async def update_config(config_id: int, configuration: ConfigurationCreate):
+    update_query = (
+        update(schemas.Configuration)
+        .where(
+            schemas.Configuration.id == config_id,
+        )
+        .values(
+            name=configuration.name,
+        )
+    )
+    await database.execute(update_query)
 
 
 async def delete_config(config_id: int):
@@ -127,13 +134,14 @@ async def read_config_avaliable_devices(
 
 
 async def update_config_connections(config_id: int, connections: ConnectionsTyped):
-    # Обновление Connections для config_cals
-    for connection in connections.config_cals:
-        await update_config_connection(config_id, connection)
+    async with database.transaction():
+        # Обновление Connections для config_cals
+        for connection in connections.config_cals:
+            await update_config_connection(config_id, connection)
 
-    # Обновление Connections для config_upconv
-    for connection in connections.config_upconv:
-        await update_config_connection(config_id, connection)
+        # Обновление Connections для config_upconv
+        for connection in connections.config_upconv:
+            await update_config_connection(config_id, connection)
 
 
 # TODO: Добавить изменение сущности устройства
