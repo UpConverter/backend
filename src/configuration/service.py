@@ -51,6 +51,12 @@ async def update_config(config_id: int, configuration: ConfigurationCreate):
 
 async def delete_config(config_id: int):
     async with database.transaction():
+        # Удаление всех записей из таблицы attempts с указанным configuration_id
+        delete_attempts_query = delete(schemas.Attempt).where(
+            schemas.Attempt.configuration_id == config_id
+        )
+        await database.execute(delete_attempts_query)
+
         # Удаление всех записей из таблицы connection с указанным configuration_id
         delete_connection_query = delete(schemas.Connection).where(
             schemas.Connection.configuration_id == config_id
@@ -95,6 +101,7 @@ async def read_config_connections(
             schemas.Connection.connected_to_device_channel_id == schemas.Channel.id,
         )
         .filter(schemas.Connection.configuration_id == config_id)
+        .order_by(main_device.name)
     )
 
     if device_type_name:
