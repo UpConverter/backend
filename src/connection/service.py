@@ -43,6 +43,32 @@ async def update_connection(connection_id: int, connection: models.ConnectionUpd
     return await read_connection(connection_id)
 
 
+async def update_connection_channel(connection_id: int, channel_id: int):
+    update_query = (
+        update(schemas.Connection)
+        .where(schemas.Connection.id == connection_id)
+        .values(
+            connected_to_device_channel_id=channel_id,
+        )
+    )
+    await database.execute(update_query)
+    return await read_connection(connection_id)
+
+
+async def update_connection_connected_to(
+    connection_id: int, connected_to_device_id: int
+):
+    update_query = (
+        update(schemas.Connection)
+        .where(schemas.Connection.id == connection_id)
+        .values(
+            connected_to_device_id=connected_to_device_id,
+        )
+    )
+    await database.execute(update_query)
+    return await read_connection(connection_id)
+
+
 async def delete_connection(connection_id: int):
     delete_query = delete(schemas.Connection).where(
         schemas.Connection.id == connection_id

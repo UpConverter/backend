@@ -102,3 +102,13 @@ async def delete_existing_device(device_id: int):
         return {"message": f"Device deleted successfully"}
     else:
         raise HTTPException(status_code=404, detail="Device not found")
+
+
+@router.put("/{device_id}/model", response_model=Device)
+async def update_existing_device(device_id: int, model: str):
+    device = await read_device(device_id)
+    if device:
+        model_id = await read_device_model_id(model)
+        return await update_device_model(device_id, model_id)
+    else:
+        raise HTTPException(status_code=404, detail="Device not found")

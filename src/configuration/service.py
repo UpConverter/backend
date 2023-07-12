@@ -73,6 +73,7 @@ async def read_config_connections(
     select_query = (
         select(
             schemas.Connection.id,
+            schemas.Connection.device_id,
             main_device.name.label("device"),
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
@@ -144,13 +145,9 @@ async def update_config_connections(config_id: int, connections: ConnectionsType
             await update_config_connection(config_id, connection)
 
 
-# TODO: Добавить изменение сущности устройства
 async def update_config_connection(config_id: int, connection: Connections):
-    connection.device_id = await read_device_id(connection.device_name)
-    connection.connected_to_device_id = await read_device_id(
-        connection.connected_to_device
-    )
-    connection.connected_to_device_channel_id = await read_device_channel_id(
+    connected_to_device_id = await read_device_id(connection.connected_to_device)
+    connected_to_device_channel_id = await read_device_channel_id(
         connection.connected_to_device_channel
     )
 
@@ -162,8 +159,8 @@ async def update_config_connection(config_id: int, connection: Connections):
         )
         .values(
             device_id=connection.device_id,
-            connected_to_device_id=connection.connected_to_device_id,
-            connected_to_device_channel_id=connection.connected_to_device_channel_id,
+            connected_to_device_id=connected_to_device_id,
+            connected_to_device_channel_id=connected_to_device_channel_id,
         )
     )
     await database.execute(update_query)

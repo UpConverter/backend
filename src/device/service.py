@@ -167,6 +167,16 @@ async def update_device(device_id: int, device: models.DeviceRelatedCreate):
     return await read_device(device_id)
 
 
+async def update_device_model(device_id: int, model_id: int):
+    update_query = (
+        update(schemas.Device)
+        .where(schemas.Device.id == device_id)
+        .values(model_id=model_id)
+    )
+    await database.execute(update_query)
+    return await read_device(device_id)
+
+
 async def delete_device(device_id: int):
     delete_query = delete(schemas.Device).where(schemas.Device.id == device_id)
 
