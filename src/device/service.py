@@ -136,9 +136,10 @@ async def create_device(device: models.DeviceRelatedCreate):
 
 
 async def update_device(device_id: int, device: models.DeviceRelatedCreate):
-    update_values = {
-        "name": device.name,
-    }
+    update_values = {}
+
+    if device.name:
+        update_values["name"] = device.name
 
     if device.type_name:
         type_id = await read_device_type_id(device.type_name)
