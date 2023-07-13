@@ -52,12 +52,10 @@ async def get_devices_by_types(
     return devices_by_types
 
 
-@router.get("/by_types_related", response_model=list[DeviceRelated])
-async def get_devices_by_types_related(
-    type_names: list[str] = Query(...), skip: int = 0, limit: int = 100
-):
-    devices_by_types = await read_devices_by_types_related(
-        type_names, skip=skip, limit=limit
+@router.get("/by_type_related", response_model=list[DeviceRelated])
+async def get_devices_by_type_related(type_name: str, skip: int = 0, limit: int = 100):
+    devices_by_types = await read_devices_by_type_related(
+        type_name, skip=skip, limit=limit
     )
     if devices_by_types:
         return devices_by_types
@@ -72,6 +70,17 @@ async def get_device(device_id: int):
         return device
     else:
         raise HTTPException(status_code=404, detail="Device not found")
+
+
+@router.post("/cal", response_model=Device)
+async def create_new_cal(device: CalCreate):
+    exist_device = await read_device_id(device.name)
+    if exist_device:
+        raise HTTPException(
+            status_code=404, detail=f"Device with name {device.name} already exist"
+        )
+    else:
+        return await create_cal(device)
 
 
 @router.post("/", response_model=Device)

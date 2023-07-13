@@ -62,16 +62,19 @@ class Device(DeviceCreate):
         orm_mode = True
 
 
-class DeviceRelatedCreate(DeviceBase):
+class CalCreate(DeviceBase):
+    serial_number: int
     type_name: str
     model_name: Optional[str]
+
+
+class DeviceRelatedCreate(CalCreate):
     state_name: Optional[str]
     additional_state_name: Optional[str]
 
 
 class DeviceRelated(DeviceRelatedCreate):
     id: int
-    serial_number: int
 
 
 class Channel(BaseModel):

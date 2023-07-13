@@ -4,7 +4,6 @@ from src import schemas
 from src.database import database
 from src.device import models
 from src.device.models import Device, DeviceChannel
-from src.device.utils import gen_unique_serial_number
 
 
 async def read_device_types(skip: int = 0, limit: int = 100):
@@ -112,8 +111,23 @@ async def read_device_id(device_name: str) -> int:
     return result.id if result else None
 
 
+async def create_cal(device: models.CalCreate):
+    type_id = await read_device_type_id(device.type_name)
+    model_id = await read_device_model_id(device.model_name)
+
+    insert_query = insert(schemas.Device).values(
+        {
+            "name": device.name,
+            "serial_number": device.serial_number,
+            "type_id": type_id,
+            "model_id": model_id,
+        }
+    )
+    device_id = await database.execute(insert_query)
+    return await read_device(device_id)
+
+
 async def create_device(device: models.DeviceRelatedCreate):
-    serial_number = await gen_unique_serial_number()
     type_id = await read_device_type_id(device.type_name)
     model_id = await read_device_model_id(device.model_name)
     state_id = await read_device_state_id(device.state_name)
@@ -124,7 +138,7 @@ async def create_device(device: models.DeviceRelatedCreate):
     insert_query = insert(schemas.Device).values(
         {
             "name": device.name,
-            "serial_number": serial_number,
+            "serial_number": device.serial_number,
             "type_id": type_id,
             "model_id": model_id,
             "state_id": state_id,
@@ -179,9 +193,18 @@ async def update_device_model(device_id: int, model_id: int):
 
 
 async def delete_device(device_id: int):
-    delete_query = delete(schemas.Device).where(schemas.Device.id == device_id)
+    async with database.transaction():
+        # Удаление всех записей из таблицы connections с указанным device_id или connected_to_device_id
+        delete_connections_query = delete(schemas.Connection).where(
+            (schemas.Connection.device_id == device_id)
+            | (schemas.Connection.connected_to_device_id == device_id)
+        )
+        await database.execute(delete_connections_query)
 
-    return await database.execute(delete_query)
+        delete_device_query = delete(schemas.Device).where(
+            schemas.Device.id == device_id
+        )
+        await database.execute(delete_device_query)
 
 
 async def read_devices_by_type(type_name: str, skip: int = 0, limit: int = 100):
@@ -227,9 +250,7 @@ async def read_device_related(device_id: int):
     return device
 
 
-async def read_devices_by_types_related(
-    type_names: list[str], skip: int = 0, limit: int = 100
-):
+async def read_devices_by_type_related(type_name: str, skip: int = 0, limit: int = 100):
     select_query = (
         select(
             schemas.Device,
@@ -242,7 +263,7 @@ async def read_devices_by_types_related(
         .outerjoin(schemas.Device.state)
         .outerjoin(schemas.DeviceModel)
         .outerjoin(schemas.Device.additional_state)
-        .filter(schemas.DeviceType.name.in_(type_names))
+        .filter(schemas.DeviceType.name == type_name)
         .offset(skip)
         .limit(limit)
     )
