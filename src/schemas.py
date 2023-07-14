@@ -59,7 +59,7 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
-    serial_number = Column(Integer, unique=True)
+    serial_number = Column(String, unique=True)
     type_id = Column(Integer, ForeignKey("device_type.id"))
     model_id = Column(Integer, ForeignKey("device_model.id"))
     state_id = Column(Integer, ForeignKey("device_state.id"))

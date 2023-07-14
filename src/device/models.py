@@ -56,14 +56,14 @@ class DeviceCreate(DeviceBase):
 
 class Device(DeviceCreate):
     id: int
-    serial_number: int
+    serial_number: str
 
     class Config:
         orm_mode = True
 
 
 class CalCreate(DeviceBase):
-    serial_number: int
+    serial_number: str
     type_name: str
     model_name: Optional[str]
 

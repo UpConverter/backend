@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from src.device.models import *
 from src.device.service import *
+from src.device.utils import is_unique_serial_number
 
 router = APIRouter()
 
@@ -88,19 +89,33 @@ async def create_new_device(device: DeviceRelatedCreate):
     exist_device = await read_device_id(device.name)
     if exist_device:
         raise HTTPException(
-            status_code=404, detail=f"Device with name {device.name} already exist"
+            status_code=409, detail=f"Device with name {device.name} already exist"
         )
-    else:
+    if await is_unique_serial_number(device.serial_number):
         return await create_device(device)
+    else:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Device with serial number {device.serial_number} already exist",
+        )
 
 
 @router.put("/{device_id}", response_model=Device)
 async def update_existing_device(device_id: int, updated_device: DeviceRelatedCreate):
     device = await read_device(device_id)
-    if device:
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    if updated_device.serial_number == device.serial_number:
+        return await update_device(device_id, updated_device)
+
+    if await is_unique_serial_number(updated_device.serial_number):
         return await update_device(device_id, updated_device)
     else:
-        raise HTTPException(status_code=404, detail="Device not found")
+        raise HTTPException(
+            status_code=409,
+            detail=f"Device with serial number {device.serial_number} already exist",
+        )
 
 
 @router.delete("/{device_id}")

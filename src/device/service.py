@@ -150,7 +150,7 @@ async def create_device(device: models.DeviceRelatedCreate):
 
 
 async def update_device(device_id: int, device: models.DeviceRelatedCreate):
-    update_values = {}
+    update_values = {"serial_number": device.serial_number}
 
     if device.name:
         update_values["name"] = device.name

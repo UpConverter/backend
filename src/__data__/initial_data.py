@@ -6,7 +6,7 @@ data = {
     "DeviceType": [{"name": "SA"}, {"name": "CAL"}, {"name": "UPCONVERTER"}],
     "DeviceModel": [
         {"name": "COAXIAL"},
-        {"name": "SOLID STATE"},
+        {"name": "SMDvA"},
         {"name": "SMD"},
     ],
     "DeviceState": [{"name": "CRYO"}, {"name": "CAL"}, {"name": "TERMINATE"}],
@@ -21,6 +21,7 @@ data = {
         {"name": "CH4"},
         {"name": "CH5"},
         {"name": "CH6"},
+        {"name": "CH7"},
     ],
     "Speed": [
         {"value": 57600},
@@ -33,6 +34,9 @@ data = {
         {"name": "COM2"},
         {"name": "COM3"},
         {"name": "COM4"},
+    ],
+    "Device": [
+        {"name": "SA", "serial_number": "000000", "type_id": 1},
     ],
 }
 
