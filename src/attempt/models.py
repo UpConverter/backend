@@ -17,11 +17,14 @@ class AttemptCreate(AttemptBase):
 
 class Attempt(AttemptBase):
     id: int
-    success: bool
     timestamp: datetime
 
     class Config:
         orm_mode = True
+
+
+class AttemptStatus(Attempt):
+    success: bool
 
 
 class AttemptRelatedCreate(BaseModel):
@@ -31,9 +34,10 @@ class AttemptRelatedCreate(BaseModel):
 
 
 class AttemptRelated(AttemptRelatedCreate):
+    id: int
     configuration: str
-    success: bool
 
 
 class AttemptConnections(ConnectionsTyped):
     attempt: AttemptRelated
+    success: bool

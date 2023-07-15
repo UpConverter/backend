@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -106,7 +106,6 @@ class Attempt(Base):
     configuration_id = Column(Integer, ForeignKey("configuration.id"))
     speed_id = Column(Integer, ForeignKey("speed.id"))
     port_id = Column(Integer, ForeignKey("port.id"))
-    success = Column(Boolean)
     timestamp = Column(DateTime)
 
     configuration = relationship("Configuration", backref="attempts")

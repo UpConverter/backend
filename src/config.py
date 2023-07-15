@@ -3,6 +3,7 @@ from typing import Any
 from pydantic import BaseSettings, PostgresDsn, root_validator
 
 from src.constants import Environment
+from src.visa.driver import DeviceManager
 
 
 class Config(BaseSettings):
@@ -25,6 +26,8 @@ class Config(BaseSettings):
 
 
 settings = Config()
+device_manager = DeviceManager()
+
 
 app_configs: dict[str, Any] = {"title": "UpConverter API"}
 if settings.ENVIRONMENT.is_deployed:

@@ -5,6 +5,7 @@ from src.attempt.models import (
     AttemptConnections,
     AttemptCreate,
     AttemptRelatedCreate,
+    AttemptStatus,
 )
 from src.attempt.service import (
     create_attempt,
@@ -15,6 +16,7 @@ from src.attempt.service import (
     read_last_success_attempt,
     update_attempt,
 )
+from src.config import device_manager
 from src.configuration.service import read_config_connections
 from src.port.service import read_port_id
 from src.speed.service import read_speed_id
@@ -39,11 +41,15 @@ async def get_last_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        return {
-            "attempt": attempt,
-            "config_cals": config_cals,
-            "config_upconv": config_upconv,
-        }
+        success = device_manager.is_success(
+            attempt.port, attempt.speed, config_cals, config_upconv
+        )
+        return AttemptConnections(
+            config_cals=config_cals,
+            config_upconv=config_upconv,
+            attempt=attempt,
+            success=success,
+        )
     else:
         raise HTTPException(status_code=404, detail="No attempts found")
 
@@ -59,11 +65,15 @@ async def get_last_success_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        return {
-            "attempt": attempt,
-            "config_cals": config_cals,
-            "config_upconv": config_upconv,
-        }
+        success = device_manager.is_success(
+            attempt.port, attempt.speed, config_cals, config_upconv
+        )
+        return AttemptConnections(
+            config_cals=config_cals,
+            config_upconv=config_upconv,
+            attempt=attempt,
+            success=success,
+        )
     else:
         raise HTTPException(status_code=404, detail="No successful attempts found")
 
@@ -74,10 +84,10 @@ async def get_last_success_attempt():
 #  Или поставить на фронте предварительное сохранение )
 # после чего запоминая состояние приборов в текущий момент
 # после чего пытаться переключить в новое положение считывая из конфигурации
-@router.post("/", response_model=Attempt)
-async def create_new_attempt(attempt: AttemptRelatedCreate):
-    speed_id = await read_speed_id(attempt.speed)
-    port_id = await read_port_id(attempt.port)
+@router.post("/", response_model=AttemptStatus)
+async def create_new_attempt(attempt_related: AttemptRelatedCreate):
+    speed_id = await read_speed_id(attempt_related.speed)
+    port_id = await read_port_id(attempt_related.port)
     if not speed_id:
         raise HTTPException(status_code=404, detail="Speed not found")
     if not port_id:
@@ -85,13 +95,26 @@ async def create_new_attempt(attempt: AttemptRelatedCreate):
 
     attempt = await create_attempt(
         AttemptCreate(
-            configuration_id=attempt.configuration_id,
+            configuration_id=attempt_related.configuration_id,
             speed_id=speed_id,
             port_id=port_id,
-        )
+        ),
     )
 
-    return attempt
+    config_cals = await read_config_connections(
+        attempt.configuration_id, device_type_name="CAL"
+    )
+    config_upconv = await read_config_connections(
+        attempt.configuration_id, device_type_name="UPCONVERTER"
+    )
+
+    success = device_manager.apply_attempt(
+        attempt_related.port, attempt_related.speed, config_cals, config_upconv
+    )
+    if success:
+        return {**attempt, "success": success}
+    else:
+        raise HTTPException(status_code=403, detail="Ошибка применения конфигурации")
 
 
 @router.put("/{attempt_id}", response_model=Attempt)
