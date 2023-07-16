@@ -8,7 +8,6 @@ class ConnectionCreate(BaseModel):
 
 
 class ConnectionUpdate(ConnectionCreate):
-    model_id: Optional[str]
     connected_to_device_id: Optional[int]
     connected_to_device_channel_id: Optional[int]
 
@@ -21,13 +20,15 @@ class Connection(ConnectionUpdate):
 class ConnectionRelatedCreate(BaseModel):
     device_id: int
     device: str
-    model_name: Optional[str]
     connected_to_device: Optional[str]
+    connected_to_device_model_name: Optional[str]
     connected_to_device_channel: Optional[str]
 
 
 class Connections(ConnectionRelatedCreate):
     id: int
+    serial_number: int
+    model_name: Optional[str]
     state_name: Optional[str]
 
     class Config:

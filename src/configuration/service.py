@@ -75,16 +75,19 @@ async def read_config_connections(
 ) -> Connections:
     main_device = aliased(schemas.Device)
     connected_device = aliased(schemas.Device)
+    connected_device_model = aliased(schemas.DeviceModel)
 
     select_query = (
         select(
             schemas.Connection.id,
             schemas.Connection.device_id,
+            main_device.serial_number,
             main_device.name.label("device"),
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
             schemas.DeviceState.name.label("state_name"),
             connected_device.name.label("connected_to_device"),
+            connected_device_model.name.label("connected_to_device_model_name"),
             schemas.Channel.name.label("connected_to_device_channel"),
         )
         .select_from(schemas.Connection)
@@ -99,6 +102,10 @@ async def read_config_connections(
         .join(
             schemas.Channel,
             schemas.Connection.connected_to_device_channel_id == schemas.Channel.id,
+        )
+        .outerjoin(
+            connected_device_model,
+            connected_device.model_id == connected_device_model.id,
         )
         .filter(schemas.Connection.configuration_id == config_id)
         .order_by(main_device.name)
