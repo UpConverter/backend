@@ -99,7 +99,7 @@ async def read_main_device(type_name="SA") -> Device:
     return device
 
 
-async def read_device(device_id: int):
+async def read_device(device_id: int) -> Device:
     select_query = select(schemas.Device).filter(schemas.Device.id == device_id)
     return await database.fetch_one(select_query)
 
@@ -187,6 +187,16 @@ async def update_device_model(device_id: int, model_id: int):
         update(schemas.Device)
         .where(schemas.Device.id == device_id)
         .values(model_id=model_id)
+    )
+    await database.execute(update_query)
+    return await read_device(device_id)
+
+
+async def update_device_state(device_id: int, state_id: int):
+    update_query = (
+        update(schemas.Device)
+        .where(schemas.Device.id == device_id)
+        .values(state_id=state_id)
     )
     await database.execute(update_query)
     return await read_device(device_id)

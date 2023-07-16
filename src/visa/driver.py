@@ -6,6 +6,7 @@ from src.connection.models import Connections
 from src.visa.exceptions import (
     ConnectedToSAError,
     ConnectError,
+    InvalidConncetionError,
     ManySADevicesError,
     SANotExistError,
     UnknownError,
@@ -29,6 +30,26 @@ class DeviceManager:
         self.speed = None
         self.cals = []
         self.upconv = []
+
+    def to_dict(self, devices: Connections):
+        result = {}
+        index = 1
+
+        for device in devices:
+            device_dict = {
+                "index": index,
+                "device_id": device.device_id,
+                "model_name": device.model_name,
+                "state_name": device.state_name,
+                "serial_number": device.serial_number,
+                "connected_to_device": device.connected_to_device,
+                "connected_to_device_model_name": device.connected_to_device_model_name,
+                "connected_to_device_channel": device.connected_to_device_channel,
+            }
+            result[device.device] = device_dict
+            index += 1
+
+        return result
 
     def connect(self, port, speed) -> bool:
         if self.device and self.port == port and self.speed == speed:
@@ -57,8 +78,9 @@ class DeviceManager:
         return self.device
 
     def is_success(self, port, speed, cals: Connections, upconv: Connections):
-        cals = [cal.device for cal in cals]
-        upconv = [up.device for up in upconv]
+        cals = self.to_dict(cals)
+        upconv = self.to_dict(upconv)
+
         return (
             self.port == port
             and self.speed == speed
@@ -69,6 +91,7 @@ class DeviceManager:
     def apply_attempt(
         self, port, speed, cals: Connections, upconv: Connections
     ) -> bool:
+        print("\033[93mНеобходимо раскомментировать строчку проверки скорости!\033[0m")
         # if not self.connect(port, speed):
         #     return False
 
@@ -88,33 +111,67 @@ class DeviceManager:
         if upconv_connected_to_sa:
             raise ConnectedToSAError()
 
-        # Сохраняем последнюю примененную конфигурацию
-        self.cals = [cal.device for cal in cals]
-        self.upconv = [up.device for up in upconv]
-        self.port = port
-        self.speed = speed
+        if self.check_devices(cals, upconv):
+            # Сохраняем последнюю примененную конфигурацию
+            self.cals = self.to_dict(cals)
+            self.upconv = self.to_dict(upconv)
+            self.port = port
+            self.speed = speed
 
-        return True
+            return True
+        else:
+            return False
 
-    # def check_devices(cals: Connections, upconv: Connections, visa_instrument) -> bool:
-    #     all_exist = True
-    #     i = 1
-    #     for cal in cals:
-    #         f"CAL{i}_IDN?"
-    #         # if cal.type_name == ""
-    #         try:
-    #             visa_instrument.query(f"CAL{i}_IDN?")
-    #         except Exception:
-    #             all_exist = False
-    #             break
-    #         i += 1
+    def check_devices(self, cals: Connections, upconv: Connections) -> bool:
+        all_exist = True
+        print(
+            "\033[93mНеобходимо добавить логику проверки наличия всех устройств\033[0m"
+        )
+        #     i = 1
+        #     for cal in cals:
+        #         f"CAL{i}_IDN?"
+        #         # if cal.type_name == ""
+        #         try:
+        #             visa_instrument.query(f"CAL{i}_IDN?")
+        #         except Exception:
+        #             all_exist = False
+        #             break
+        #         i += 1
 
-    #     for upconv in upconv:
-    #         try:
-    #             visa_instrument.query(f"UPCONV{i}_IDN?")
-    #         except Exception:
-    #             all_exist = False
-    #             break
-    #         print()
+        #     for upconv in upconv:
+        #         try:
+        #             visa_instrument.query(f"UPCONV{i}_IDN?")
+        #         except Exception:
+        #             all_exist = False
+        #             break
+        #         print()
 
-    #     return all_exist
+        return all_exist
+
+    def change_state(
+        self,
+        device_name: str,
+        new_state: str,
+        port: str,
+        speed: int,
+        cals: Connections,
+        upconv: Connections,
+    ) -> bool:
+        success = self.is_success(port, speed, cals, upconv)
+        if success:
+            return self.__change_upconverter_state(device_name, new_state)
+        else:
+            raise InvalidConncetionError()
+
+    def __change_upconverter_state(self, device_name: str, new_state: str) -> bool:
+        print(
+            "\033[93mНеобходимо добавить логику изменения состояния апконвертера\033[0m"
+        )
+        print("\033[93mDevice name: ", device_name, "New state:", new_state, "\033[0m")
+        print("\033[93mSelf.upconv: ", self.upconv[device_name], "\033[0m")
+        if device_name in self.upconv:
+            device = self.upconv[device_name]
+            device["state_name"] = new_state
+            return True
+        else:
+            return False

@@ -25,5 +25,13 @@ class ConnectedToSAError(BadRequest):
     DETAIL = ErrorCode.CONNECTED_TO_SA_ERROR
 
 
+class InvalidConncetionError(BadRequest):
+    DETAIL = ErrorCode.INVALID_CONNECTION_ERROR
+
+
+class StateChangeError(BadRequest):
+    DETAIL = ErrorCode.STATE_CHANGE_ERROR
+
+
 class UnknownError(DetailedHTTPException):
     DETAIL = ErrorCode.UNKNOWN_ERROR

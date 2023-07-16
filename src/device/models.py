@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from src.connection.models import ConnectionsTyped
+
 
 class DeviceType(BaseModel):
     id: int
@@ -80,3 +82,9 @@ class DeviceRelated(DeviceRelatedCreate):
 class Channel(BaseModel):
     id: int
     name: str
+
+
+class UpdateDeviceState(ConnectionsTyped):
+    port: str
+    speed: int
+    state: str

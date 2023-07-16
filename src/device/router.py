@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Query
 
+from src.config import device_manager
 from src.device.models import *
 from src.device.service import *
 from src.device.utils import is_unique_serial_number
+from src.visa.exceptions import StateChangeError
 
 router = APIRouter()
 
@@ -129,10 +131,35 @@ async def delete_existing_device(device_id: int):
 
 
 @router.put("/{device_id}/model", response_model=Device)
-async def update_existing_device(device_id: int, model: str):
+async def update_existing_device_model(device_id: int, model: str):
     device = await read_device(device_id)
     if device:
         model_id = await read_device_model_id(model)
         return await update_device_model(device_id, model_id)
     else:
         raise HTTPException(status_code=404, detail="Device not found")
+
+
+@router.put("/{device_id}/state", response_model=Device)
+async def update_existing_device_state(device_id: int, device: UpdateDeviceState):
+    exist_device = await read_device(device_id)
+    # TODO: Проверка cals & upconv
+    if not exist_device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    state_id = await read_device_state_id(device.state)
+    if not state_id:
+        raise HTTPException(status_code=404, detail="State id not found")
+
+    success = device_manager.change_state(
+        exist_device.name,
+        device.state,
+        device.port,
+        device.speed,
+        device.config_cals,
+        device.config_upconv,
+    )
+    if success:
+        return await update_device_state(device_id, state_id)
+    else:
+        raise StateChangeError()
