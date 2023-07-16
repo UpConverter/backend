@@ -27,7 +27,7 @@ class ConnectionRelatedCreate(BaseModel):
 
 class Connections(ConnectionRelatedCreate):
     id: int
-    serial_number: int
+    serial_number: str
     model_name: Optional[str]
     state_name: Optional[str]
 
