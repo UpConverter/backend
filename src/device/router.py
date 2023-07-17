@@ -140,26 +140,21 @@ async def update_existing_device_model(device_id: int, model: str):
         raise HTTPException(status_code=404, detail="Device not found")
 
 
-@router.put("/{device_id}/state", response_model=Device)
-async def update_existing_device_state(device_id: int, device: UpdateDeviceState):
+@router.put("/{device_id}/state")
+async def update_existing_device_state(
+    device_id: int, new_state: str, attempt_token: str
+):
     exist_device = await read_device(device_id)
-    # TODO: Проверка cals & upconv
     if not exist_device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    state_id = await read_device_state_id(device.state)
+    state_id = await read_device_state_id(new_state)
     if not state_id:
         raise HTTPException(status_code=404, detail="State id not found")
 
-    success = device_manager.change_state(
-        exist_device.name,
-        device.state,
-        device.port,
-        device.speed,
-        device.config_cals,
-        device.config_upconv,
-    )
-    if success:
-        return await update_device_state(device_id, state_id)
+    new_token = device_manager.change_state(exist_device.name, new_state, attempt_token)
+    if new_token:
+        await update_device_state(device_id, state_id)
+        return {"attmept_token": new_token}
     else:
         raise StateChangeError()

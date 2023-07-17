@@ -1,3 +1,6 @@
+import hashlib
+import json
+
 import pyvisa
 from pyvisa.errors import VisaIOError
 
@@ -28,8 +31,25 @@ class DeviceManager:
         self.device = None
         self.port = None
         self.speed = None
+        self.token = None
         self.cals = []
         self.upconv = []
+
+    def __generate_token(self, port, speed, cals, upconv):
+        # Создание словаря с данными
+        data = {
+            "port": port,
+            "speed": speed,
+            "cals": cals,
+            "upconv": upconv,
+        }
+        # Преобразование словаря в JSON
+        json_data = json.dumps(data, sort_keys=True)
+
+        # Генерация хэш-суммы токена
+        token = hashlib.md5(json_data.encode()).hexdigest()
+
+        return token
 
     def to_dict(self, devices: Connections):
         result = {}
@@ -77,25 +97,34 @@ class DeviceManager:
     def is_connected(self) -> bool:
         return self.device
 
-    def is_success(self, port, speed, cals: Connections, upconv: Connections):
+    def is_params_match(
+        self, port, speed, cals: Connections, upconv: Connections
+    ) -> str:
+        # Проверяет совпадение токена с переданным.
+        # Временно может принимать параметры
         cals = self.to_dict(cals)
         upconv = self.to_dict(upconv)
 
-        return (
+        if (
             self.port == port
             and self.speed == speed
             and self.cals == cals
             and self.upconv == upconv
-        )
+            and self.token
+        ):
+            return self.token
+        else:
+            return ""
 
-    def apply_attempt(
-        self, port, speed, cals: Connections, upconv: Connections
-    ) -> bool:
+    def is_token_valid(self, token) -> bool:
+        return token == self.token
+
+    def apply_attempt(self, port, speed, cals: Connections, upconv: Connections) -> str:
         print("\033[93mНеобходимо раскомментировать строчку проверки скорости!\033[0m")
         # if not self.connect(port, speed):
         #     return False
 
-        # Подключенный к SA cal может быть только 1
+        # Подключенный к SA cal обязан быть и только 1
         cals_connected_to_sa = [
             cal for cal in cals if MAIN_CAL in cal.connected_to_device
         ]
@@ -117,10 +146,11 @@ class DeviceManager:
             self.upconv = self.to_dict(upconv)
             self.port = port
             self.speed = speed
-
-            return True
+            self.token = self.__generate_token(port, speed, self.cals, self.upconv)
+            print("\033[93mТокен сгенерирован", self.token, "\033[0m")
+            return self.token
         else:
-            return False
+            return ""
 
     def check_devices(self, cals: Connections, upconv: Connections) -> bool:
         all_exist = True
@@ -152,18 +182,20 @@ class DeviceManager:
         self,
         device_name: str,
         new_state: str,
-        port: str,
-        speed: int,
-        cals: Connections,
-        upconv: Connections,
-    ) -> bool:
-        success = self.is_success(port, speed, cals, upconv)
-        if success:
+        token: str,
+    ) -> str:
+        # Метод должен принимать attempt_token и проверять его совпадение
+        print("\033[93mСтарый токен", self.token, "\033[0m")
+        print("\033[93mНовый токен", token, token == self.token, "\033[0m")
+        access = self.is_token_valid(token)
+        if access:
             return self.__change_upconverter_state(device_name, new_state)
         else:
             raise InvalidConncetionError()
 
-    def __change_upconverter_state(self, device_name: str, new_state: str) -> bool:
+    def __change_upconverter_state(
+        self, device_name: str, new_state: str
+    ) -> str | bool:
         print(
             "\033[93mНеобходимо добавить логику изменения состояния апконвертера\033[0m"
         )
@@ -172,6 +204,9 @@ class DeviceManager:
         if device_name in self.upconv:
             device = self.upconv[device_name]
             device["state_name"] = new_state
-            return True
+            self.token = self.__generate_token(
+                self.port, self.speed, self.cals, self.upconv
+            )
+            return self.token
         else:
-            return False
+            return ""

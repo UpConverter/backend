@@ -41,14 +41,14 @@ async def get_last_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        success = device_manager.is_success(
+        token = device_manager.is_params_match(
             attempt.port, attempt.speed, config_cals, config_upconv
         )
         return AttemptConnections(
             config_cals=config_cals,
             config_upconv=config_upconv,
             attempt=attempt,
-            success=success,
+            attempt_token=token,
         )
     else:
         raise HTTPException(status_code=404, detail="No attempts found")
@@ -65,14 +65,14 @@ async def get_last_success_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        success = device_manager.is_success(
+        token = device_manager.is_params_match(
             attempt.port, attempt.speed, config_cals, config_upconv
         )
         return AttemptConnections(
             config_cals=config_cals,
             config_upconv=config_upconv,
             attempt=attempt,
-            success=success,
+            attempt_token=token,
         )
     else:
         raise HTTPException(status_code=404, detail="No successful attempts found")
@@ -108,11 +108,11 @@ async def create_new_attempt(attempt_related: AttemptRelatedCreate):
         attempt.configuration_id, device_type_name="UPCONVERTER"
     )
 
-    success = device_manager.apply_attempt(
+    token = device_manager.apply_attempt(
         attempt_related.port, attempt_related.speed, config_cals, config_upconv
     )
-    if success:
-        return {**attempt, "success": success}
+    if token:
+        return {**attempt, "attempt_token": token}
     else:
         raise HTTPException(status_code=403, detail="Ошибка применения конфигурации")
 

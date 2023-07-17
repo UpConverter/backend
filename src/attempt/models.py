@@ -24,7 +24,7 @@ class Attempt(AttemptBase):
 
 
 class AttemptStatus(Attempt):
-    success: bool
+    attempt_token: str
 
 
 class AttemptRelatedCreate(BaseModel):
@@ -40,4 +40,4 @@ class AttemptRelated(AttemptRelatedCreate):
 
 class AttemptConnections(ConnectionsTyped):
     attempt: AttemptRelated
-    success: bool
+    attempt_token: str
