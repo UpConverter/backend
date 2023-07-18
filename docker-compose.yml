@@ -13,7 +13,7 @@ services:
       - ./:/src
     ports:
       - "8000:8000"
-    # privileged: true
+    privileged: true
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
     depends_on:

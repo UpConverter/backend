@@ -4,9 +4,8 @@ from src.exceptions import BadRequest, DetailedHTTPException
 from src.visa.constants import ErrorCode
 
 
-class VisaIOError(DetailedHTTPException):
-    STATUS_CODE = status.HTTP_500_INTERNAL_SERVER_ERROR
-    DETAIL = "Visa IO Error"
+class VisaError(DetailedHTTPException):
+    DETAIL = ErrorCode.VISA_ERROR
 
 
 class ConnectError(BadRequest):
@@ -31,6 +30,18 @@ class InvalidConncetionError(BadRequest):
 
 class StateChangeError(BadRequest):
     DETAIL = ErrorCode.STATE_CHANGE_ERROR
+
+
+class InvalidDeviceNameError(BadRequest):
+    DETAIL = ErrorCode.INVALID_DEVICE_NAME_ERROR
+
+
+class InvalidDeviceModelError(BadRequest):
+    DETAIL = ErrorCode.INVALID_DEVICE_MODEL_ERROR
+
+
+class CalModelSmdvaError(BadRequest):
+    DETAIL = ErrorCode.CAL_MODEL_SMDVA_ERROR
 
 
 class UnknownError(DetailedHTTPException):

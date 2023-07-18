@@ -41,7 +41,7 @@ async def get_last_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        token = device_manager.is_params_match(
+        token = device_manager.get_token(
             attempt.port, attempt.speed, config_cals, config_upconv
         )
         return AttemptConnections(
@@ -65,7 +65,7 @@ async def get_last_success_attempt():
         config_upconv = await read_config_connections(
             attempt.configuration_id, device_type_name="UPCONVERTER"
         )
-        token = device_manager.is_params_match(
+        token = device_manager.get_token(
             attempt.port, attempt.speed, config_cals, config_upconv
         )
         return AttemptConnections(
