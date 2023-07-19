@@ -44,5 +44,11 @@ class CalModelSmdvaError(BadRequest):
     DETAIL = ErrorCode.CAL_MODEL_SMDVA_ERROR
 
 
+class InvalidSerialNumberError(BadRequest):
+    def __init__(self, device_name):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = ErrorCode.INVALID_SERIAL_NUMBER + " " + device_name
+
+
 class UnknownError(DetailedHTTPException):
     DETAIL = ErrorCode.UNKNOWN_ERROR

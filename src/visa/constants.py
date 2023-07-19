@@ -12,3 +12,4 @@ class ErrorCode:
     INVALID_DEVICE_MODEL_ERROR = "Модель устройства должна быть одной из существующих"
     CAL_MODEL_SMDVA_ERROR = "Модель калибровочного модуля не может быть SMDvA"
     VISA_ERROR = "Ошибка отправки команды в устройство"
+    INVALID_SERIAL_NUMBER = "Неверный серийный номер устройства"
