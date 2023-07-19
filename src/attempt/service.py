@@ -1,4 +1,4 @@
-from sqlalchemy import and_, delete, func, insert, select, update
+from sqlalchemy import delete, func, insert, select, update
 
 from src import schemas
 from src.attempt import models
@@ -66,48 +66,6 @@ async def read_last_attempt() -> AttemptRelated:
         )
         .where(
             schemas.Attempt.timestamp == subquery,
-        )
-        .join(
-            schemas.Configuration,
-            schemas.Attempt.configuration_id == schemas.Configuration.id,
-        )
-        .join(
-            schemas.Speed,
-            schemas.Attempt.speed_id == schemas.Speed.id,
-        )
-        .join(
-            schemas.Port,
-            schemas.Attempt.port_id == schemas.Port.id,
-        )
-    )
-
-    result = await database.fetch_one(select_query)
-
-    return result
-
-
-async def read_last_success_attempt():
-    # Create a subquery to retrieve the maximum timestamp of successful attempts
-    subquery = (
-        select(func.max(schemas.Attempt.timestamp))
-        .where(schemas.Attempt.success)
-        .scalar_subquery()
-    )
-
-    # Build the main query to fetch the last attempt with success=True
-    select_query = (
-        select(
-            schemas.Attempt.id,
-            schemas.Configuration.id.label("configuration_id"),
-            schemas.Configuration.name.label("configuration"),
-            schemas.Speed.value.label("speed"),
-            schemas.Port.name.label("port"),
-        )
-        .where(
-            and_(
-                schemas.Attempt.timestamp == subquery,
-                schemas.Attempt.success,
-            )
         )
         .join(
             schemas.Configuration,

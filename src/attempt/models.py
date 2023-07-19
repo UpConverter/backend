@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from src.connection.models import ConnectionsTyped
+from src.connection.models import Connections, ConnectionsTyped
 
 
 class AttemptBase(BaseModel):
@@ -40,4 +40,14 @@ class AttemptRelated(AttemptRelatedCreate):
 
 class AttemptConnections(ConnectionsTyped):
     attempt: AttemptRelated
+    attempt_token: str
+
+
+class AttemptUpconverters(BaseModel):
+    cal: str
+    upconverters: list[Connections]
+
+
+class AttemptCals(BaseModel):
+    cals: list[AttemptUpconverters]
     attempt_token: str

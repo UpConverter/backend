@@ -10,6 +10,9 @@ class ErrorCode:
     STATE_CHANGE_ERROR = "Не удалось изменить состояние устройства"
     INVALID_DEVICE_NAME_ERROR = "Имя устройства не найдено в конфигурации"
     INVALID_DEVICE_MODEL_ERROR = "Модель устройства должна быть одной из существующих"
+    INVALID_DEVICE_STATE_ERROR = (
+        "Состояние устройства должно быть одним из существующих"
+    )
     CAL_MODEL_SMDVA_ERROR = "Модель калибровочного модуля не может быть SMDvA"
     VISA_ERROR = "Ошибка отправки команды в устройство"
     INVALID_SERIAL_NUMBER = "Неверный серийный номер устройства"

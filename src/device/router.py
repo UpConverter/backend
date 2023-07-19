@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from src.config import device_manager
 from src.device.models import *
 from src.device.service import *
 from src.device.utils import is_unique_serial_number
+from src.visa.config import device_manager
 from src.visa.exceptions import StateChangeError
 
 router = APIRouter()
@@ -155,6 +155,6 @@ async def update_existing_device_state(
     new_token = device_manager.change_state(exist_device.name, new_state, attempt_token)
     if new_token:
         await update_device_state(device_id, state_id)
-        return {"attmept_token": new_token}
+        return {"attempt_token": new_token}
     else:
         raise StateChangeError()

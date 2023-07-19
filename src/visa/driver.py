@@ -5,6 +5,7 @@ import pyvisa
 from pyvisa.errors import VisaIOError
 
 from src.attempt.constants import MAIN_CAL
+from src.config import settings
 from src.connection.models import Connections
 from src.visa.exceptions import (
     CalModelSmdvaError,
@@ -13,10 +14,10 @@ from src.visa.exceptions import (
     InvalidConncetionError,
     InvalidDeviceModelError,
     InvalidDeviceNameError,
+    InvalidDeviceStateError,
     InvalidSerialNumberError,
     ManySADevicesError,
     SANotExistError,
-    UnknownError,
     VisaError,
 )
 
@@ -66,6 +67,7 @@ class DeviceManager:
                 "device_id": device.device_id,
                 "model_name": device.model_name,
                 "state_name": device.state_name,
+                "additional_state_name": device.additional_state_name,
                 "serial_number": device.serial_number,
                 "connected_to_device": device.connected_to_device,
                 "connected_to_device_model_name": device.connected_to_device_model_name,
@@ -84,13 +86,14 @@ class DeviceManager:
             return True
 
         try:
-            # Если подключен с другими параметрами, то надо будет отключить
+            # Если подключен с другими параметрами, то надо переподключить
             if self.device is not None:
-                print(
-                    "\033[93mИзменились параметры подключения. Переподключим устройство",
-                    self.device,
-                    "\033[0m",
-                )
+                if settings.ENVIRONMENT.is_debug:
+                    print(
+                        "\033[93mИзменились параметры подключения. Переподключим устройство",
+                        self.device,
+                        "\033[0m",
+                    )
                 self.device.close()
                 self.device = None
 
@@ -101,10 +104,12 @@ class DeviceManager:
             return True
 
         except VisaIOError:
-            raise ConnectError()
+            raise VisaError()
 
-        except Exception:
-            raise UnknownError()
+        except Exception as err:
+            if settings.ENVIRONMENT.is_debug:
+                raise err
+            raise ConnectError()
 
     def get_token(self, port, speed, cals: Connections, upconv: Connections) -> str:
         # Передает токен на основе данных
@@ -147,7 +152,8 @@ class DeviceManager:
             self.port = port
             self.speed = speed
             self.token = self.__generate_token(port, speed, self.cals, self.upconv)
-            print("\033[93mТокен сгенерирован", self.token, "\033[0m")
+            if settings.ENVIRONMENT.is_debug:
+                print("\033[93mТокен сгенерирован", self.token, "\033[0m")
             return self.token
         else:
             return ""
@@ -225,14 +231,20 @@ class DeviceManager:
                 if device["model_name"] == "COAXIAL":
                     self.device.query(f"SW{device['index']}R")
 
-                # TODO: В зависимости от выбранного состояния нужны разные
-                # команды. Здесь сделано для CAL
-                self.device.query(f"UpConvA({device['index']})_CAL")
-                cal_name = device["connected_to_device"]
-                cal_index = self.cals[cal_name]["index"]
-                channel = device["connected_to_device_channel"]
-                command = f"CAL({cal_index})_{channel}"
-                self.device.query(command)
+                if new_state == "CAL":
+                    self.device.query(f"UpConvA({device['index']})_CAL")
+                    cal_name = device["connected_to_device"]
+                    cal_index = self.cals[cal_name]["index"]
+                    channel = device["connected_to_device_channel"]
+                    command = f"CAL({cal_index})_{channel}"
+                    self.device.query(command)
+                elif new_state == "CRYO":
+                    self.device.query(f"UpConvA({device['index']})_CRYO")
+                elif new_state == "TERMINATE":
+                    pass
+                else:
+                    raise InvalidDeviceStateError()
+
             except Exception:
                 raise VisaError()
 

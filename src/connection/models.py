@@ -30,6 +30,7 @@ class Connections(ConnectionRelatedCreate):
     serial_number: str
     model_name: Optional[str]
     state_name: Optional[str]
+    additional_state_name: Optional[str]
 
     class Config:
         orm_mode = True

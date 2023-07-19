@@ -40,6 +40,10 @@ class InvalidDeviceModelError(BadRequest):
     DETAIL = ErrorCode.INVALID_DEVICE_MODEL_ERROR
 
 
+class InvalidDeviceStateError(BadRequest):
+    DETAIL = ErrorCode.INVALID_DEVICE_STATE_ERROR
+
+
 class CalModelSmdvaError(BadRequest):
     DETAIL = ErrorCode.CAL_MODEL_SMDVA_ERROR
 

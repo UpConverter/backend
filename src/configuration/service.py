@@ -86,6 +86,7 @@ async def read_config_connections(
             schemas.DeviceModel.name.label("model_name"),
             schemas.DeviceType.name.label("type_name"),
             schemas.DeviceState.name.label("state_name"),
+            schemas.DeviceAdditionalState.name.label("additional_state_name"),
             connected_device.name.label("connected_to_device"),
             connected_device_model.name.label("connected_to_device_model_name"),
             schemas.Channel.name.label("connected_to_device_channel"),
@@ -95,6 +96,10 @@ async def read_config_connections(
         .join(schemas.DeviceModel, main_device.model_id == schemas.DeviceModel.id)
         .join(schemas.DeviceType, main_device.type_id == schemas.DeviceType.id)
         .outerjoin(schemas.DeviceState, main_device.state_id == schemas.DeviceState.id)
+        .outerjoin(
+            schemas.DeviceAdditionalState,
+            main_device.additional_state_id == schemas.DeviceAdditionalState.id,
+        )
         .join(
             connected_device,
             schemas.Connection.connected_to_device_id == connected_device.id,

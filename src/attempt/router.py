@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from src.attempt.models import (
     Attempt,
+    AttemptCals,
     AttemptConnections,
     AttemptCreate,
     AttemptRelatedCreate,
@@ -13,13 +14,13 @@ from src.attempt.service import (
     read_attempt,
     read_attempts,
     read_last_attempt,
-    read_last_success_attempt,
     update_attempt,
 )
-from src.config import device_manager
+from src.attempt.utils import group_upconverters_by_cal
 from src.configuration.service import read_config_connections
 from src.port.service import read_port_id
 from src.speed.service import read_speed_id
+from src.visa.config import device_manager
 
 router = APIRouter()
 
@@ -54,36 +55,6 @@ async def get_last_attempt():
         raise HTTPException(status_code=404, detail="No attempts found")
 
 
-@router.get("/last_success", response_model=AttemptConnections)
-async def get_last_success_attempt():
-    attempt = await read_last_success_attempt()
-
-    if attempt:
-        config_cals = await read_config_connections(
-            attempt.configuration_id, device_type_name="CAL"
-        )
-        config_upconv = await read_config_connections(
-            attempt.configuration_id, device_type_name="UPCONVERTER"
-        )
-        token = device_manager.get_token(
-            attempt.port, attempt.speed, config_cals, config_upconv
-        )
-        return AttemptConnections(
-            config_cals=config_cals,
-            config_upconv=config_upconv,
-            attempt=attempt,
-            attempt_token=token,
-        )
-    else:
-        raise HTTPException(status_code=404, detail="No successful attempts found")
-
-
-# TODO: Метод должен пытаться применить попытку,
-# сначала сохраняя конфигурацию,
-# ( Возможно здесь лучше убрать кнопку "Сохранить" на фронте
-#  Или поставить на фронте предварительное сохранение )
-# после чего запоминая состояние приборов в текущий момент
-# после чего пытаться переключить в новое положение считывая из конфигурации
 @router.post("/", response_model=AttemptStatus)
 async def create_new_attempt(attempt_related: AttemptRelatedCreate):
     speed_id = await read_speed_id(attempt_related.speed)
@@ -134,3 +105,26 @@ async def delete_existing_attempt(attempt_id: int):
         return {"message": f"Attempt deleted successfully"}
     else:
         raise HTTPException(status_code=404, detail="Attempt not found")
+
+
+@router.get("/last/upconverters", response_model=AttemptCals)
+async def get_last_attempt_upconverters():
+    attempt = await read_last_attempt()
+
+    if attempt:
+        config_cals = await read_config_connections(
+            attempt.configuration_id, device_type_name="CAL"
+        )
+        config_upconv = await read_config_connections(
+            attempt.configuration_id, device_type_name="UPCONVERTER"
+        )
+        token = device_manager.get_token(
+            attempt.port, attempt.speed, config_cals, config_upconv
+        )
+        grouped_cals = await group_upconverters_by_cal(config_upconv)
+        return AttemptCals(
+            cals=grouped_cals,
+            attempt_token=token,
+        )
+    else:
+        raise HTTPException(status_code=404, detail="No attempts found")
