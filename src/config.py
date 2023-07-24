@@ -9,12 +9,17 @@ class Config(BaseSettings):
     DATABASE_URL: PostgresDsn
 
     # SITE_DOMAIN: str = "myapp.com"
-    ENVIRONMENT: Environment = Environment.LOCAL
+    ENVIRONMENT: Environment = Environment.PRODUCTION
     SENTRY_DSN: str | None = "/"
     CORS_ORIGINS: list[str]
     CORS_ORIGINS_REGEX: str | None
     CORS_HEADERS: list[str]
     APP_VERSION: str = "1"
+
+    COM1: str
+    COM2: str
+    COM3: str
+    COM4: str
 
     @root_validator(skip_on_failure=True)
     def validate_sentry_non_local(cls, data: dict[str, Any]) -> dict[str, Any]:

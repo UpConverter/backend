@@ -22,16 +22,14 @@ from src.visa.exceptions import (
 )
 
 PORT_MAPPING = {
-    "COM1": "ASRL/dev/ttyACM0::INSTR",
-    "COM2": "/dev/ttyACM1::INSTR",
-    "COM3": "/dev/ttyACM2::INSTR",
-    "COM4": "/dev/ttyACM3::INSTR",
+    "COM1": settings.COM1,
+    "COM2": settings.COM2,
+    "COM3": settings.COM3,
+    "COM4": settings.COM4,
 }
 
 
 class DeviceManager:
-    DEVICE_PORT = "ASRL/dev/ttyACM0::INSTR"
-
     def __init__(self):
         self.rm = pyvisa.ResourceManager()
         self.device = None

@@ -3,3 +3,4 @@ venv/*
 test.db
 .env
 .cache
+.pytest_cache
