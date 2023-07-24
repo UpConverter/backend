@@ -33,26 +33,9 @@ COM4=ASRL/dev/ttyACM3::INSTR
 ```
     docker compose exec upconverter_backend pytest
 ```
-## Настройка под Linux Ubuntu
-### При необходимости создайте виртуальное окружение в Python
-> Можно пропустить этот шаг
-```
-    python3 -m venv venv
-    source venv/bin/activate
-```
-### Устанавливаем зависимости
-> Внутри виртуального окружения или без него
-```
-    pip install -r requirements/base.txt
-```
-### Заполняем базу данных по умолчанию
+### Заполняем базу данных справочных таблиц по умолчанию
 ``` 
     python -m src.__data__.initial_data 
-```
-> Чтобы добавить тестовые данные ``` python -m src.__data__.test_data ```
-### Запускаем сервер
-```
-    uvicorn src.main:app --reload
 ```
 
 ------
@@ -63,6 +46,10 @@ http://127.0.0.1:8000/
 > http://127.0.0.1:8000/docs
 
 ## Production deploy
+Перед этим база данных обязана быть заполнена данными справочных таблиц. Например это можно сделать командой изнутри докер контейнера:
+``` 
+    python -m src.__data__.initial_data 
+```
 В файле .env заменить ENVIRONMENT. Например: 
 
 ```
