@@ -8,6 +8,7 @@ from src.attempt.constants import MAIN_CAL
 from src.config import settings
 from src.connection.models import Connections
 from src.visa.exceptions import (
+    AddStateChangeError,
     CalModelSmdvaError,
     ConnectedToSAError,
     ConnectError,
@@ -77,7 +78,7 @@ class DeviceManager:
         return result
 
     def __parse_response(self, res: str):
-        return res.split(" ")[0]
+        return int(res)
 
     def __connect(self, port, speed) -> bool:
         if self.device is not None and self.port == port and self.speed == speed:
@@ -163,20 +164,25 @@ class DeviceManager:
             for cal_name, cal_info in cals.items():
                 model = cal_info["model_name"]
                 if model == "COAXIAL":
-                    index = cal_info["index"]
-                    command = f"CAL({index})_IDN?"
-                    response = self.device.query(command)
-                    current_sn = self.__parse_response(response)
-                    if current_sn != cal_info["serial_number"]:
-                        raise InvalidSerialNumberError(device_name=cal_name)
-                elif model == "SMD":
                     pass
+                elif model == "SMD":
+                    index = cal_info["index"]
+                    command = f"CAL{index}_IDN?"
+                    response = self.device.query(command)
+
+                    expect_sn = response[:-2]
+                    cal_sn = cal_info["serial_number"]
+                    if int(expect_sn) != int(cal_sn):
+                        raise InvalidSerialNumberError(
+                            device_name=cal_name, expect=expect_sn, got=cal_sn
+                        )
                 elif model == "SMDvA":
                     raise CalModelSmdvaError()
                 else:
                     raise InvalidDeviceModelError()
 
             for upc_name, upc_info in upconv.items():
+                # Разные действия от модели устройства
                 model = upc_info["model_name"]
                 if model == "COAXIAL":
                     pass
@@ -184,11 +190,27 @@ class DeviceManager:
                     pass
                 elif model == "SMDvA":
                     index = upc_info["index"]
-                    command = f"UpConvA({index})_IDN?"
+                    command = f"UpConvA{index}_IDN?"
                     response = self.device.query(command)
-                    current_sn = self.__parse_response(response)
-                    if current_sn != upc_info["serial_number"]:
-                        raise InvalidSerialNumberError(device_name=upc_name)
+
+                    expect_sn = response[:-2]
+                    upc_sn = upc_info["serial_number"]
+                    if int(expect_sn) != int(upc_sn):
+                        raise InvalidSerialNumberError(
+                            device_name=upc_name, expect=expect_sn, got=upc_sn
+                        )
+
+                    # Изменение дополнительного состояния
+                    upc_as = upc_info["additional_state_name"]
+                    got_as = self.device.query(f"UpConvA{index}_ADDSTATE?")[:-2]
+                    if upc_as != got_as:
+                        command = f"UpConvA{index}_{upc_as}"
+                        response = self.device.query(command)
+                        got_as = self.device.query(f"UpConvA{index}_ADDSTATE?")[:-2]
+                        if upc_as != got_as:
+                            raise AddStateChangeError(
+                                upc_name, expect=upc_as, got=got_as
+                            )
                 else:
                     raise InvalidDeviceModelError()
 
@@ -196,9 +218,9 @@ class DeviceManager:
             self.cals = cals
             self.upconv = upconv
 
-        except (CalModelSmdvaError, InvalidDeviceModelError) as err:
-            raise err
-        except Exception:
+        except Exception as err:
+            if settings.ENVIRONMENT.is_debug:
+                raise err
             raise VisaError()
 
         return True
@@ -230,14 +252,14 @@ class DeviceManager:
                     self.device.query(f"SW{device['index']}R")
 
                 if new_state == "CAL":
-                    self.device.query(f"UpConvA({device['index']})_CAL")
+                    self.device.query(f"UpConvA{device['index']}_CAL")
                     cal_name = device["connected_to_device"]
                     cal_index = self.cals[cal_name]["index"]
                     channel = device["connected_to_device_channel"]
-                    command = f"CAL({cal_index})_{channel}"
+                    command = f"CAL{cal_index}_{channel}"
                     self.device.query(command)
                 elif new_state == "CRYO":
-                    self.device.query(f"UpConvA({device['index']})_CRYO")
+                    self.device.query(f"UpConvA{device['index']}_CRYO")
                 elif new_state == "TERMINATE":
                     pass
                 else:

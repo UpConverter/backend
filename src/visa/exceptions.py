@@ -49,9 +49,15 @@ class CalModelSmdvaError(BadRequest):
 
 
 class InvalidSerialNumberError(BadRequest):
-    def __init__(self, device_name):
+    def __init__(self, device_name, expect, got):
         self.status_code = status.HTTP_400_BAD_REQUEST
-        self.detail = ErrorCode.INVALID_SERIAL_NUMBER + " " + device_name
+        self.detail = f"{ErrorCode.INVALID_SERIAL_NUMBER} {device_name}, ожидалось устройством: {expect} получено в конфигурации: {got}"
+
+
+class AddStateChangeError(BadRequest):
+    def __init__(self, device_name, expect, got):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = f"{ErrorCode.ADD_STATE_CHANGE_ERROR} {device_name}, в конфигурации: {expect} получено в устройстве: {got}"
 
 
 class UnknownError(DetailedHTTPException):
